@@ -27,7 +27,6 @@
         <Button Content="Load End Image" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="182" Height="20" Click="OnClick_LoadEndImage"/>
         <ComboBox HorizontalAlignment="Left" Margin="83,89,0,0" VerticalAlignment="Top" Width="109" Height="22"/>
         <Label Content="Technique:" HorizontalAlignment="Left" Margin="5,85,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.421,-0.231" Width="73" Height="26"/>
-        <Slider Margin="10,0,10,10" Height="24" VerticalAlignment="Bottom" Grid.Column="1"/>
-
+        <Slider Margin="10,0,10,10" Height="24" VerticalAlignment="Bottom" Grid.Column="1" ValueChanged="OnProgressChange" Name="ProgressBar"/>
     </Grid>
 </Window>

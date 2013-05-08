@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Threading.Tasks;
 
 namespace MorphingTool
 {
@@ -29,15 +30,17 @@ namespace MorphingTool
             unsafe
             {
                 UInt32* outputData = (UInt32*)outputImage.BackBuffer;
-                int outputDataOffset = 0;
-                for (int y = 0; y < outputImage.PixelHeight; ++y)
+                int width = outputImage.PixelWidth;
+                Parallel.For(0, outputImage.PixelHeight, y =>
                 {
-                    for (int x = 0; x < outputImage.PixelWidth; ++x)
+                    UInt32* outputDataPixel = outputData + y * width;
+                    for (int x = 0; x < width; ++x)
                     {
-                        outputData[outputDataOffset] = ImageUtilities.ColorToUInt(Color.FromRgb(255, 0, 255));
-                        ++outputDataOffset;
+                        byte grayness = (byte)(255 * percentage);
+                        *outputDataPixel = ImageUtilities.ColorToUInt(Color.FromRgb(grayness, grayness, grayness));
+                        ++outputDataPixel;
                     }
-                }
+                });
             }
 
             outputImage.AddDirtyRect(new System.Windows.Int32Rect(0, 0, outputImage.PixelWidth, outputImage.PixelHeight));

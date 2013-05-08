@@ -90,7 +90,8 @@ namespace MorphingTool
             if (StartImage.Source == null || EndImage.Source == null)
                 return;
 
-            _morphingAlgorithm.MorphImages(StartImage.Source, EndImage.Source, 0.0f, OutputImage.Source as WriteableBitmap);
+            float progress = (float)(ProgressBar.Value / ProgressBar.Maximum);
+            _morphingAlgorithm.MorphImages(StartImage.Source, EndImage.Source, progress, OutputImage.Source as WriteableBitmap);
         }
 
         /// <summary>
@@ -105,6 +106,11 @@ namespace MorphingTool
             int height = (int)Math.Max(StartImage.Source.Height, EndImage.Source.Height);
             
             OutputImage.Source = new WriteableBitmap(width, height, 0.0f, 0.0f, PixelFormats.Bgra32, null);
+            UpdateOutputImageContent();
+        }
+
+        private void OnProgressChange(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
             UpdateOutputImageContent();
         }
     }
