@@ -20,6 +20,8 @@ namespace MorphingTool
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Morphing _morphingAlgorithm = new Morphing();
+    
         public MainWindow()
         {
             InitializeComponent();
@@ -32,7 +34,10 @@ namespace MorphingTool
         {
             BitmapImage image = LoadImageFileDialog();
             if (image != null)
+            {
                 StartImage.Source = image;
+                RecreateOutputImage();
+            }
         }
 
         /// <summary>
@@ -42,7 +47,10 @@ namespace MorphingTool
         {
             BitmapImage image = LoadImageFileDialog();
             if (image != null)
+            {
                 EndImage.Source = image;
+                RecreateOutputImage();
+            }
         }
 
         /// <summary>
@@ -65,12 +73,39 @@ namespace MorphingTool
                 {
                     return new BitmapImage(new Uri(openDialog.FileName));
                 }
-                catch(Exception exp)
+                catch(Exception)
                 {
                     return null;
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Updates the content of the output image using the fully configurated Morphing-instance and
+        /// the current progress from the progress-slider.
+        /// </summary>
+        private void UpdateOutputImageContent()
+        {
+            if (StartImage.Source == null || EndImage.Source == null)
+                return;
+
+            _morphingAlgorithm.MorphImages(StartImage.Source, EndImage.Source, 0.0f, OutputImage.Source as WriteableBitmap);
+        }
+
+        /// <summary>
+        /// Recreates the output image with appropriate size corresponding to StartImage and OutputImage
+        /// </summary>
+        private void RecreateOutputImage()
+        {
+            if (StartImage.Source == null || EndImage.Source == null)
+                return;
+
+            int width = (int)Math.Max(StartImage.Source.Width, EndImage.Source.Width);
+            int height = (int)Math.Max(StartImage.Source.Height, EndImage.Source.Height);
+            
+            OutputImage.Source = new WriteableBitmap(width, height, 0.0f, 0.0f, PixelFormats.Bgra32, null);
+            UpdateOutputImageContent();
         }
     }
 }
