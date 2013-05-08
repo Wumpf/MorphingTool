@@ -10,7 +10,7 @@
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="805*"/>
         </Grid.ColumnDefinitions>
-        <Grid Margin="7,10,10,39" ScrollViewer.VerticalScrollBarVisibility="Disabled" ShowGridLines="True" Background="#FFEAEAEA" Grid.Column="1">
+        <Grid Margin="7,10,10,39" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="#FFEAEAEA" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
@@ -19,12 +19,12 @@
                 <RowDefinition/>
                 <RowDefinition FrameworkElement.FlowDirection="RightToLeft"/>
             </Grid.RowDefinitions>
-            <Image Name="StartImage" Margin="0,0,10,5"/>
-            <Image Name="EndImage" Grid.Column="1" Margin="10,0,0,5"/>
+            <Image Name="StartImage" Margin="0,0,399,0" Grid.ColumnSpan="2" Cursor="Pen"/>
+            <Image Name="EndImage" Grid.Column="1" Margin="0.5,0,-1,0" Cursor="Pen"/>
             <Image HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1" Name="OutputImage" Grid.ColumnSpan="2" Height="250" Width="799" Margin="0,10,0,0"/>
         </Grid>
-        <Button Content="Load StartImage" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="182" Height="20"/>
-        <Button Content="Load End Image" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="182" Height="20"/>
+        <Button Content="Load Start Image" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="182" Height="20" Click="OnClick_LoadStartImage"/>
+        <Button Content="Load End Image" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="182" Height="20" Click="OnClick_LoadEndImage"/>
         <ComboBox HorizontalAlignment="Left" Margin="83,89,0,0" VerticalAlignment="Top" Width="109" Height="22"/>
         <Label Content="Technique:" HorizontalAlignment="Left" Margin="5,85,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.421,-0.231" Width="73" Height="26"/>
         <Slider Margin="10,0,10,10" Height="24" VerticalAlignment="Bottom" Grid.Column="1"/>
