@@ -91,11 +91,11 @@ namespace MorphingTool
         /// </summary>
         private void UpdateOutputImageContent()
         {
-            if (StartImage.Source == null || EndImage.Source == null)
+            if (OutputImage.Source == null)
                 return;
 
             float progress = (float)(ProgressBar.Value / ProgressBar.Maximum);
-            _morphingAlgorithm.MorphImages(StartImage.Source, EndImage.Source, progress, OutputImage.Source as WriteableBitmap);
+            _morphingAlgorithm.MorphImages(progress, OutputImage.Source as WriteableBitmap);
         }
 
         /// <summary>
@@ -145,6 +145,12 @@ namespace MorphingTool
             int width = (int)Math.Max(((BitmapSource)StartImage.Source).PixelWidth, ((BitmapSource)EndImage.Source).PixelWidth);
             int height = (int)Math.Max(((BitmapSource)StartImage.Source).PixelHeight, ((BitmapSource)EndImage.Source).PixelHeight);
             OutputImage.Source = new WriteableBitmap(width, height, 0.0f, 0.0f, PixelFormats.Bgra32, null);
+            
+            // setup for morphing
+            _morphingAlgorithm.SetStartImage(StartImage.Source as BitmapSource);
+            _morphingAlgorithm.SetEndImage(EndImage.Source as BitmapSource);
+
+            // upate output
             UpdateOutputImageContent();
         }
 

@@ -34,6 +34,15 @@ namespace MorphingTool
         private CrossDissolver _crossDissolver = new AlphaBlendDissolver();
 
         /// <summary>
+        /// Start image in an intern intermediate representation. Every int value is a 32bit color.
+        /// </summary>
+        private UInt32[,] _startImage;
+        /// <summary>
+        /// End image in an intern intermediate representation. Every int value is a 32bit color.
+        /// </summary>
+        private UInt32[,] _endImage;
+
+        /// <summary>
         /// Active type of algorithm used for morphing.
         /// Changing will reset all marker settings
         /// </summary>
@@ -66,18 +75,38 @@ namespace MorphingTool
         }
 
         /// <summary>
+        /// Sets the StartImage and copies it into an intern intermediate buffer for faster access.
+        /// </summary>
+        /// <param name="endImage">Image for morphingProgress=1</param>
+        public void SetStartImage(BitmapSource startImage)
+        {
+            _startImage = new UInt32[startImage.PixelWidth, startImage.PixelHeight];
+            startImage.CopyPixels(_startImage, startImage.PixelWidth * sizeof(UInt32), 0);
+        }
+
+        /// <summary>
+        /// Sets the StartImage and copies it into an intern intermediate buffer for faster access.
+        /// </summary>
+        /// <param name="endImage">Image for morphingProgress=1</param>
+        public void SetEndImage(BitmapSource endImage)
+        {
+            _endImage = new UInt32[endImage.PixelWidth, endImage.PixelHeight];
+            endImage.CopyPixels(_endImage, endImage.PixelWidth * sizeof(UInt32), 0);
+        }
+
+        /// <summary>
         /// Performs morphing between two images using the given algorithm and feature-markers.
         /// </summary>
         /// <param name="startImage">Image for morphingProgress=0</param>
-        /// <param name="endImage">Image for morphingProgress=1</param>
+        
         /// <param name="morphingProgress">Morph-percentage from 0 to 1</param>
         /// <param name="outputImage">target for image output data</param>
-        public void MorphImages(ImageSource startImage, ImageSource endImage, float morphingProgress, WriteableBitmap outputImage)
+        public void MorphImages(float morphingProgress, WriteableBitmap outputImage)
         {
             System.Diagnostics.Debug.Assert(morphingProgress >= 0.0f && morphingProgress <= 1.0f);
-            System.Diagnostics.Debug.Assert(startImage != null && endImage != null && outputImage != null);
+            System.Diagnostics.Debug.Assert(_startImage != null && _endImage != null && outputImage != null);
 
-            _crossDissolver.DissolveImages(startImage, endImage, morphingProgress, outputImage);
+            _crossDissolver.DissolveImages(_startImage, _endImage, morphingProgress, outputImage);
         }
     }
 }

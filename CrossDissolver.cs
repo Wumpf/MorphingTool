@@ -19,6 +19,6 @@ namespace MorphingTool
         /// <param name="endImage">Image for percentage=1</param>
         /// <param name="morphingProgress">Dissolve percentage from 0 to 1</param>
         /// <param name="outputImage">Target for image output data</param>
-        void DissolveImages(ImageSource startImage, ImageSource endImage, float percentage, WriteableBitmap outputImage);
+        void DissolveImages(UInt32[,] startImage, UInt32[,] endImage, float percentage, WriteableBitmap outputImage);
     }
 }

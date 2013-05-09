@@ -20,7 +20,7 @@ namespace MorphingTool
         /// <param name="endImage">Image for percentage=1</param>
         /// <param name="morphingProgress">Dissolve percentage from 0 to 1</param>
         /// <param name="outputImage">Target for image output data</param>
-        public void DissolveImages(ImageSource startImage, ImageSource endImage, float percentage, WriteableBitmap outputImage)
+        public void DissolveImages(UInt32[,] startImage, UInt32[,] endImage, float percentage, WriteableBitmap outputImage)
         {
             System.Diagnostics.Debug.Assert(percentage >= 0.0f && percentage <= 1.0f);
             System.Diagnostics.Debug.Assert(startImage != null && endImage != null && outputImage != null);
