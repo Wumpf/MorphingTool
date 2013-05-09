@@ -37,6 +37,17 @@
           <NewMemberFileName>Morphing.cs</NewMemberFileName>
         </TypeIdentifier>
       </Enum>
+      <Class Name="MorphingTool.Morphing.ImageData" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Morphing.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+      <Struct Name="MorphingTool.Morphing.Color" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Morphing.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
     </NestedTypes>
     <TypeIdentifier>
       <HashCode>AAAAAAEAAAAEAAARBAAAAAEAAAgAgAAAIAAAAAAAAAA=</HashCode>

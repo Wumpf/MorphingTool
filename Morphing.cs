@@ -34,13 +34,58 @@ namespace MorphingTool
         private CrossDissolver _crossDissolver = new AlphaBlendDissolver();
 
         /// <summary>
+        /// Since pointers to any data structure with managed attributes are prohibited, there is an own simple Color class.
+        /// </summary>
+        public struct Color
+        {
+            public byte B;
+            public byte G;
+            public byte R;
+            public byte A;
+        }
+
+        /// <summary>
+        /// Intern representation of Image Data.
+        /// </summary>
+        public unsafe class ImageData : IDisposable
+        {
+            public Color* Data { get; private set; }
+            public readonly int Width;
+            public readonly int Height;
+
+            public readonly int BufferSize;
+            public readonly int Stride;
+
+            public ImageData(int width, int height)
+            {
+                Stride = width * sizeof(Color);
+                BufferSize = Stride * height;
+
+                Data = (Color*)System.Runtime.InteropServices.Marshal.AllocHGlobal(BufferSize);
+                Width = width;
+                Height = height;
+            }
+
+            ~ImageData()
+            {
+                Dispose();
+            }
+
+            public void Dispose()
+            {
+                System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)Data);
+                Data = null;
+            }
+        };
+
+        /// <summary>
         /// Start image in an intern intermediate representation. Every int value is a 32bit color.
         /// </summary>
-        private UInt32[,] _startImage;
+        private ImageData _startImage;
         /// <summary>
         /// End image in an intern intermediate representation. Every int value is a 32bit color.
         /// </summary>
-        private UInt32[,] _endImage;
+        private ImageData _endImage;
 
         /// <summary>
         /// Active type of algorithm used for morphing.
@@ -78,20 +123,32 @@ namespace MorphingTool
         /// Sets the StartImage and copies it into an intern intermediate buffer for faster access.
         /// </summary>
         /// <param name="endImage">Image for morphingProgress=1</param>
-        public void SetStartImage(BitmapSource startImage)
+        public void SetStartImage(BitmapSource inputStartImage)
         {
-            _startImage = new UInt32[startImage.PixelWidth, startImage.PixelHeight];
-            startImage.CopyPixels(_startImage, startImage.PixelWidth * sizeof(UInt32), 0);
+            if(_startImage != null)
+                _startImage.Dispose();
+
+            _startImage = new ImageData(inputStartImage.PixelWidth, inputStartImage.PixelHeight);
+            unsafe
+            {
+                inputStartImage.CopyPixels(System.Windows.Int32Rect.Empty, (IntPtr)_startImage.Data, _startImage.BufferSize, _startImage.Stride);
+            }
         }
 
         /// <summary>
         /// Sets the StartImage and copies it into an intern intermediate buffer for faster access.
         /// </summary>
         /// <param name="endImage">Image for morphingProgress=1</param>
-        public void SetEndImage(BitmapSource endImage)
+        public void SetEndImage(BitmapSource inputEndImage)
         {
-            _endImage = new UInt32[endImage.PixelWidth, endImage.PixelHeight];
-            endImage.CopyPixels(_endImage, endImage.PixelWidth * sizeof(UInt32), 0);
+            if (_endImage != null)
+                _endImage.Dispose();
+
+            _endImage = new ImageData(inputEndImage.PixelWidth, inputEndImage.PixelHeight);
+            unsafe
+            {
+                inputEndImage.CopyPixels(System.Windows.Int32Rect.Empty, (IntPtr)_endImage.Data, _endImage.BufferSize, _endImage.Stride);
+            }
         }
 
         /// <summary>
