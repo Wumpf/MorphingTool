@@ -21,7 +21,11 @@ namespace MorphingTool
     public partial class MainWindow : Window
     {
         private Morphing _morphingAlgorithm = new Morphing();
-    
+
+        private BitmapSource _originalStartImage;
+        private BitmapSource _originalEndImage;
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -35,8 +39,8 @@ namespace MorphingTool
             BitmapImage image = LoadImageFileDialog();
             if (image != null)
             {
-                StartImage.Source = image;
-                RecreateOutputImage();
+                StartImage.Source = _originalStartImage = image;
+                AdaptInputOutputImages();
             }
         }
 
@@ -48,8 +52,8 @@ namespace MorphingTool
             BitmapImage image = LoadImageFileDialog();
             if (image != null)
             {
-                EndImage.Source = image;
-                RecreateOutputImage();
+                EndImage.Source = _originalEndImage = image;
+                AdaptInputOutputImages();
             }
         }
 
@@ -95,16 +99,51 @@ namespace MorphingTool
         }
 
         /// <summary>
-        /// Recreates the output image with appropriate size corresponding to StartImage and OutputImage
+        /// Creates a scaled version from the originals if one of StartImage or EndImage is smaller on every axis.
+        /// Then recreates the output image with appropriate size corresponding to StartImage and EndImage
         /// </summary>
-        private void RecreateOutputImage()
+        private void AdaptInputOutputImages()
         {
-            if (StartImage.Source == null || EndImage.Source == null)
+            if (_originalStartImage == null || _originalEndImage == null)
                 return;
 
-            int width = (int)Math.Max(StartImage.Source.Width, EndImage.Source.Width);
-            int height = (int)Math.Max(StartImage.Source.Height, EndImage.Source.Height);
-            
+            // scale one of the input images
+            int deltaWidth = _originalStartImage.PixelWidth - _originalEndImage.PixelWidth;
+            int deltaHeight = _originalStartImage.PixelHeight - _originalEndImage.PixelHeight;
+            if (deltaWidth < 0 && deltaHeight < 0)  // start image smaller in every dimension
+            {
+                float sizeFactor;
+                if (Math.Abs(deltaWidth) < Math.Abs(deltaHeight))
+                    sizeFactor = (float)_originalEndImage.PixelWidth / _originalStartImage.PixelWidth;
+                else
+                    sizeFactor = (float)_originalEndImage.PixelHeight / _originalStartImage.PixelHeight;
+
+                StartImage.Source = ImageUtilities.CreateResizedImage(_originalStartImage, (int)(_originalStartImage.PixelWidth * sizeFactor + 0.5f),
+                                                                                           (int)(_originalStartImage.PixelHeight * sizeFactor + 0.5f));
+                EndImage.Source = _originalEndImage;
+            }
+            else if (deltaWidth > 0 && deltaHeight > 0)  // end image smaller in every dimension
+            {
+                float sizeFactor;
+                if (Math.Abs(deltaWidth) < Math.Abs(deltaHeight))
+                    sizeFactor = (float)_originalStartImage.PixelWidth / _originalEndImage.PixelWidth;
+                else
+                    sizeFactor = (float)_originalStartImage.PixelHeight / _originalEndImage.PixelHeight;
+
+                EndImage.Source = ImageUtilities.CreateResizedImage(_originalEndImage, (int)(_originalEndImage.PixelWidth * sizeFactor + 0.5f),
+                                                                                         (int)(_originalEndImage.PixelHeight * sizeFactor + 0.5f));
+                StartImage.Source = _originalStartImage;
+            }
+            else 
+            {
+                StartImage.Source = _originalStartImage;
+                EndImage.Source = _originalEndImage;
+            }
+
+
+            // create output image
+            int width = (int)Math.Max(((BitmapSource)StartImage.Source).PixelWidth, ((BitmapSource)EndImage.Source).PixelWidth);
+            int height = (int)Math.Max(((BitmapSource)StartImage.Source).PixelHeight, ((BitmapSource)EndImage.Source).PixelHeight);
             OutputImage.Source = new WriteableBitmap(width, height, 0.0f, 0.0f, PixelFormats.Bgra32, null);
             UpdateOutputImageContent();
         }
