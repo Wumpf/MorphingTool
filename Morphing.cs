@@ -227,8 +227,8 @@ namespace MorphingTool
             _markerSet.UpdateInterpolation(morphingProgress);
 
             // 2) warping
-            _warpingAlgorithm.WarpImage(_markerSet, _startImage, _startImageWarped);
-            _warpingAlgorithm.WarpImage(_markerSet, _endImage, _endImageWarped);
+            _warpingAlgorithm.WarpImage(_markerSet, _startImage, _startImageWarped, true);
+            _warpingAlgorithm.WarpImage(_markerSet, _endImage, _endImageWarped, false);
 
             _crossDissolver.DissolveImages(_startImageWarped, _endImageWarped, morphingProgress, outputImage);
         }
