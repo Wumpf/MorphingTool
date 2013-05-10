@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
 namespace MorphingTool
 {
@@ -33,6 +34,12 @@ namespace MorphingTool
         public static bool IsInRectangle(this Vector a, Vector rectMin, Vector rectMax)
         {
             return a.X > rectMin.X && a.X < rectMax.X && a.Y > rectMin.Y && a.Y < rectMax.Y;
+        }
+
+        public static Vector ClampToImageArea(this Vector v)
+        {
+            return new Vector(v.X < 0 ? 0 : (v.X > 1 ? 1 : v.X),
+                              v.Y < 0 ? 0 : (v.Y > 1 ? 1 : v.Y));
         }
     }
 }

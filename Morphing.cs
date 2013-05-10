@@ -42,6 +42,11 @@ namespace MorphingTool
         private CrossDissolver _crossDissolver = new AlphaBlendDissolver();
 
         /// <summary>
+        /// Algorithm for image warping.
+        /// </summary>
+        private WarpingAlgorithm _warpingAlgorithm = new RadialFunctionsWarping();
+
+        /// <summary>
         /// Intern representation of Image Data.
         /// </summary>
         public unsafe class ImageData : IDisposable
@@ -53,6 +58,10 @@ namespace MorphingTool
             public readonly int BufferSize;
             public readonly int Stride;
 
+            private readonly int widthSub1;
+            private readonly int heightSub1;
+            private readonly Color* lastValidAdress;
+
             public ImageData(int width, int height)
             {
                 Stride = width * sizeof(Color);
@@ -61,6 +70,10 @@ namespace MorphingTool
                 Data = (Color*)System.Runtime.InteropServices.Marshal.AllocHGlobal(BufferSize);
                 Width = width;
                 Height = height;
+
+                widthSub1 = width - 1;
+                heightSub1 = height - 1;
+                lastValidAdress = Data + BufferSize - 1;
             }
 
             ~ImageData()
@@ -78,23 +91,56 @@ namespace MorphingTool
             /// Samples the image data withnormalized 0-1 floating Vector coordinates.
             /// </summary>
             /// <returns>Sampled Color</returns>
-            public Color SampleLinear(float x, float y)
+            public Color Sample(double x, double y)
             {
                 System.Diagnostics.Debug.Assert(x >= 0.0f && y >= 0.0f && x <= 1.0f && y <= 1.0f);
-                int coordFloorX = (int)(x * Width);
-                int coordFloorY = (int)(y * Height);
-                return Data[coordFloorX + coordFloorY * Width];
+
+                // nearest neighbour sampling
+                /*double pixCoordX = x * widthSub1;
+                double pixCoordY = y * heightSub1;
+                int coordFloorX = (int)(pixCoordX +0.5f);
+                int coordFloorY = (int)(pixCoordY + 0.5f);
+                return Data[coordFloorX + coordFloorY * Width];*/
+            
+                // linear sampling
+                double pixCoordX = x * widthSub1;
+                double pixCoordY = y * heightSub1;
+                int coordFloorX = (int)(pixCoordX);
+                int coordFloorY = (int)(pixCoordY);
+                double fracX = pixCoordX - coordFloorX;
+                double fracY = coordFloorY - coordFloorY;
+
+                Color* upperLeft = Data + (coordFloorY * Width + coordFloorX);
+                Color* upperRight = upperLeft;
+                Color* lowerLeft = upperLeft + (coordFloorY != heightSub1 ? Width : 0);
+                Color* lowerRight = lowerLeft;
+                if (coordFloorX != widthSub1)
+                {
+                    ++upperRight;
+                    ++lowerRight;
+                }
+
+                return Color.Lerp(Color.Lerp(*upperLeft, *upperRight, fracX),
+                                  Color.Lerp(*lowerLeft, *lowerRight, fracX), fracY);
             } 
         };
 
         /// <summary>
-        /// Start image in an intern intermediate representation. Every int value is a 32bit color.
+        /// Start image in an intern intermediate representation.
         /// </summary>
         private ImageData _startImage;
         /// <summary>
-        /// End image in an intern intermediate representation. Every int value is a 32bit color.
+        /// End image in an intern intermediate representation.
         /// </summary>
         private ImageData _endImage;
+        /// <summary>
+        /// Warped inbetween image in an intern intermediate representation.
+        /// </summary>
+        private ImageData _startImageWarped;
+        /// <summary>
+        /// Warped inbetween image in an intern intermediate representation.
+        /// </summary>
+        private ImageData _endImageWarped;
 
         /// <summary>
         /// Active type of algorithm used for morphing.
@@ -111,6 +157,7 @@ namespace MorphingTool
                     {
                         case Algorithm.RADIAL_FUNCTIONS:
                             _markerSet = new PointMarkerSet();
+                            _warpingAlgorithm = new RadialFunctionsWarping();
                             break;
                     }
                     _currentAlgorithmType = value;
@@ -136,7 +183,10 @@ namespace MorphingTool
         {
             if(_startImage != null)
                 _startImage.Dispose();
+            if (_startImageWarped != null)
+                _startImageWarped.Dispose();
 
+            _startImageWarped = new ImageData(inputStartImage.PixelWidth, inputStartImage.PixelHeight);
             _startImage = new ImageData(inputStartImage.PixelWidth, inputStartImage.PixelHeight);
             unsafe
             {
@@ -152,7 +202,10 @@ namespace MorphingTool
         {
             if (_endImage != null)
                 _endImage.Dispose();
+            if (_endImageWarped != null)
+                _endImageWarped.Dispose();
 
+            _endImageWarped = new ImageData(inputEndImage.PixelWidth, inputEndImage.PixelHeight);
             _endImage = new ImageData(inputEndImage.PixelWidth, inputEndImage.PixelHeight);
             unsafe
             {
@@ -170,9 +223,14 @@ namespace MorphingTool
             System.Diagnostics.Debug.Assert(morphingProgress >= 0.0f && morphingProgress <= 1.0f);
             System.Diagnostics.Debug.Assert(_startImage != null && _endImage != null && outputImage != null);
 
+            // 1) marker interpolation
             _markerSet.UpdateInterpolation(morphingProgress);
 
-            _crossDissolver.DissolveImages(_startImage, _endImage, morphingProgress, outputImage);
+            // 2) warping
+            _warpingAlgorithm.WarpImage(_markerSet, _startImage, _startImageWarped);
+            _warpingAlgorithm.WarpImage(_markerSet, _endImage, _endImageWarped);
+
+            _crossDissolver.DissolveImages(_startImageWarped, _endImageWarped, morphingProgress, outputImage);
         }
     }
 }

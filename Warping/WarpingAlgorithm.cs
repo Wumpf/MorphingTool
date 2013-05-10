@@ -7,6 +7,6 @@ namespace MorphingTool
 {
     public interface WarpingAlgorithm
     {
-       // WarpImage(MarkerSet inputMarker, Morphing.ImageData inputImage, Morphing.ImageData outputImage);
+        unsafe void WarpImage(MarkerSet markerSet, Morphing.ImageData inputImage, Morphing.ImageData outputImage);
     }
 }

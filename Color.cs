@@ -36,5 +36,11 @@ namespace MorphingTool
                              (byte)(a.G + (float)(b.G - a.G) * interp),
                              (byte)(a.R + (float)(b.R - a.R) * interp));
         }
+        public static Color Lerp(Color a, Color b, double interp)
+        {
+            return new Color((byte)(a.B + (float)(b.B - a.B) * interp),
+                             (byte)(a.G + (float)(b.G - a.G) * interp),
+                             (byte)(a.R + (float)(b.R - a.R) * interp));
+        }
     };
 }

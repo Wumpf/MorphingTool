@@ -193,21 +193,21 @@ namespace MorphingTool
             MarkerSet.MouseLocation location = sender == StartImage ? MarkerSet.MouseLocation.START_IMAGE : MarkerSet.MouseLocation.END_IMAGE;
             _morphingAlgorithm.MarkerSet.OnLeftMouseButtonDown(location, ComputeRelativeImagePositionFromMouseEvent(sender, e),
                                                         new Vector(((Image)sender).ActualWidth, ((Image)sender).ActualHeight));
-            UpdateMarkerCanvases();
+            UpdateOutputImageContent();
         }
         private void Image_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             MarkerSet.MouseLocation location = sender == StartImage ? MarkerSet.MouseLocation.START_IMAGE : MarkerSet.MouseLocation.END_IMAGE;
             _morphingAlgorithm.MarkerSet.OnRightMouseButtonDown(location, ComputeRelativeImagePositionFromMouseEvent(sender, e),
                                                         new Vector(((Image)sender).ActualWidth, ((Image)sender).ActualHeight));
-            UpdateMarkerCanvases();
+            UpdateOutputImageContent();
         }
         private void Image_MouseMove(object sender, MouseEventArgs e)
         {
             MarkerSet.MouseLocation location = sender == StartImage ? MarkerSet.MouseLocation.START_IMAGE : MarkerSet.MouseLocation.END_IMAGE;
             _morphingAlgorithm.MarkerSet.OnMouseMove(location, ComputeRelativeImagePositionFromMouseEvent(sender, e),
                                                         new Vector(((Image)sender).ActualWidth, ((Image)sender).ActualHeight));
-            UpdateMarkerCanvases();
+            UpdateOutputImageContent();
         }
       
         private void Image_MarkerDeselect(object sender, MouseEventArgs e)

@@ -59,6 +59,9 @@ namespace MorphingTool
             }
         };
 
+        public List<PointMarker> Points
+        { get { return _points; } }
+
         private List<PointMarker> _points = new List<PointMarker>();
         private int _selectedMarker = -1;
         private int _hoveredMarker = -1;

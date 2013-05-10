@@ -63,12 +63,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="AlphaBlendDissolver.cs" />
+    <Compile Include="CrossDissolver\AlphaBlendDissolver.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CrossDissolver.cs" />
+    <Compile Include="CrossDissolver\CrossDissolver.cs" />
     <Compile Include="ImageUtilities.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
