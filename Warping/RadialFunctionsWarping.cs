@@ -54,12 +54,13 @@ namespace MorphingTool
 
                 for (double x = 0; outputDataPixel != lastOutputDataPixel; x += xStep, ++outputDataPixel)
                 {
-                    Vector position = new Vector(x,y);
+                    Vector ownPosition = new Vector(x, y);
+                    Vector position = ownPosition;
                     
                     // fixed ptr won't work inside loop! // for(WarpMarker* pMarker = pMarkerFirst; pMarker != pMarkerEnd; ++pMarker)
                     foreach (var marker in markers)
                     {
-                        double distSq = (position - marker.CurrentPos).LengthSquared;
+                        double distSq = (ownPosition - marker.CurrentPos).LengthSquared;
                         double influence = Math.Exp(-distSq / POINT_WEIGHT);//1.0f / (1.0f + distSq / POINT_WEIGHT);        // inverse quadratic!
                         position += marker.MoveVec * influence;
                     }

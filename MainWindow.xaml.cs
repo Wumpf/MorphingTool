@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Win32;
 
 namespace MorphingTool
@@ -24,7 +17,6 @@ namespace MorphingTool
 
         private BitmapSource _originalStartImage;
         private BitmapSource _originalEndImage;
-
 
         public MainWindow()
         {
@@ -100,8 +92,8 @@ namespace MorphingTool
         }
 
         /// <summary>
-        /// Creates a scaled version from the originals if one of StartImage or EndImage is smaller on every axis.
-        /// Then recreates the output image with appropriate size corresponding to StartImage and EndImage
+        /// Rescales the start/end image from the originals to the keep performance at preview-time high.
+        /// Then recreates the output image with appropriate size corresponding to scaled StartImage and EndImage
         /// </summary>
         private void AdaptInputOutputImages()
         {
@@ -109,7 +101,7 @@ namespace MorphingTool
                 return;
 
             // scale one of the input images
-            int deltaWidth = _originalStartImage.PixelWidth - _originalEndImage.PixelWidth;
+     /*     int deltaWidth = _originalStartImage.PixelWidth - _originalEndImage.PixelWidth;
             int deltaHeight = _originalStartImage.PixelHeight - _originalEndImage.PixelHeight;
             if (deltaWidth < 0 && deltaHeight < 0)  // start image smaller in every dimension
             {
@@ -139,12 +131,15 @@ namespace MorphingTool
             {
                 StartImage.Source = _originalStartImage;
                 EndImage.Source = _originalEndImage;
-            }
-
+            }*/
+            StartImage.UpdateLayout();
+            EndImage.UpdateLayout();
+            StartImage.Source = ImageUtilities.CreateResizedImage(_originalStartImage, (int)(StartImage.ActualWidth + 0.5f), (int)(StartImage.ActualHeight + 0.5f));
+            EndImage.Source = ImageUtilities.CreateResizedImage(_originalEndImage, (int)(EndImage.ActualWidth + 0.5f), (int)(EndImage.ActualHeight + 0.5f));
 
             // create output image
-            int width = (int)Math.Max(((BitmapSource)StartImage.Source).PixelWidth, ((BitmapSource)EndImage.Source).PixelWidth);
-            int height = (int)Math.Max(((BitmapSource)StartImage.Source).PixelHeight, ((BitmapSource)EndImage.Source).PixelHeight);
+            int width = (int)Math.Max(StartImage.ActualWidth, EndImage.ActualWidth);
+            int height = (int)Math.Max(StartImage.ActualHeight, EndImage.ActualHeight);
             OutputImage.Source = new WriteableBitmap(width, height, 0.0f, 0.0f, PixelFormats.Bgra32, null);
             OutputImage.UpdateLayout();
             StartImage.UpdateLayout();
@@ -218,6 +213,7 @@ namespace MorphingTool
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            AdaptInputOutputImages();
             UpdateMarkerCanvases();
         }
     }
