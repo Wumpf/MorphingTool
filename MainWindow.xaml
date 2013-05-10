@@ -19,9 +19,11 @@
                 <RowDefinition/>
                 <RowDefinition FrameworkElement.FlowDirection="RightToLeft"/>
             </Grid.RowDefinitions>
-            <Image Name="StartImage" Cursor="Pen" MouseLeftButtonDown="StartImage_MouseLeftButtonDown" MouseRightButtonDown="StartImage_MouseRightButtonDown"/>
+            <Image Name="StartImage" Cursor="Pen" MouseLeftButtonDown="Image_MouseLeftButtonDown" MouseRightButtonDown="Image_MouseRightButtonDown" 
+                                        MouseLeftButtonUp="Image_MarkerDeselect" MouseLeave="Image_MarkerDeselect" MouseMove="Image_MouseMove"/>
             <Canvas Name="StartImageMarkerCanvas" IsHitTestVisible="False"/>
-            <Image Name="EndImage" Grid.Column="1" Cursor="Pen" MouseLeftButtonDown="EndImage_MouseLeftButtonDown" MouseRightButtonDown="EndImage_MouseRightButtonDown"/>
+            <Image Name="EndImage" Grid.Column="1" Cursor="Pen" MouseLeftButtonDown="Image_MouseLeftButtonDown" MouseRightButtonDown="Image_MouseRightButtonDown"
+                                        MouseLeftButtonUp="Image_MarkerDeselect" MouseLeave="Image_MarkerDeselect" MouseMove="Image_MouseMove"/>
             <Canvas Name="EndImageMarkerCanvas" Grid.Column="1" IsHitTestVisible="False"/>
             <Image Grid.Row="1" Name="OutputImage" Grid.ColumnSpan="2" Margin="0,10,0,0"/>
             <Canvas Name="OutputImageMarkerCanvas" Grid.Row="1" Grid.ColumnSpan="2" IsHitTestVisible="False"/>

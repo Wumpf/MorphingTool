@@ -18,28 +18,58 @@ namespace MorphingTool
             public Vector StartImagePoint;
             public Vector EndImagePoint;
             public Vector InterpolatedImageVector;
+
+            /// <summary>
+            /// Access by index.
+            /// </summary>
+            /// <param name="element">0: StartImagePoint
+            /// 1: EndImagePoint
+            /// 2: InterpolatedImageVector</param>
+            /// <returns>Relative image position value.</returns>
+            public Vector this[MouseLocation element]
+            {
+                get
+                {
+                    switch ((int)element)
+                    {
+                        case 0:
+                            return StartImagePoint;
+                        case 1:
+                            return EndImagePoint;
+                        case 2:
+                            return InterpolatedImageVector;
+                    }
+                    throw new Exception("PointMarker has only 3 Elements!");
+                }
+                set
+                {
+                    switch ((int)element)
+                    {
+                        case 0:
+                            StartImagePoint = value;
+                            break;
+                        case 1:
+                            EndImagePoint = value;
+                            break;
+                        case 2:
+                            InterpolatedImageVector = value;
+                            break;
+                    }
+                }
+            }
         };
 
         private List<PointMarker> _points = new List<PointMarker>();
+        private int _selectedPoint = -1;
 
-        public override void OnLeftClick(MouseLocation clickLocation, Vector imageCor)
+        /// <summary>
+        /// Checks if a click is on a marker-point
+        /// </summary>
+        /// <returns>-1 if none, otherwise markerindex</returns>
+        private int MarkerHitTest(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel)
         {
             if (clickLocation == MouseLocation.NONE)
-                return;
-
-            var newMarker = new PointMarker()
-            {
-                StartImagePoint = imageCor,
-                EndImagePoint = imageCor,
-                InterpolatedImageVector = imageCor
-            };
-            _points.Add(newMarker);
-        }
-
-        public override void OnRightClick(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel)
-        {
-            if (clickLocation == MouseLocation.NONE)
-                return;
+                return -1;
 
             Vector halfMarkerSize = new Vector(MARKER_RENDER_SIZE / imageSizePixel.X, MARKER_RENDER_SIZE / imageSizePixel.Y) * 0.5f;
 
@@ -50,19 +80,60 @@ namespace MorphingTool
                 bool result = false;
                 if (clickLocation == MouseLocation.START_IMAGE)
                     result = imageCor.IsInRectangle(_points[i].StartImagePoint - halfMarkerSize, _points[i].StartImagePoint + halfMarkerSize);
-                else if (clickLocation == MouseLocation.START_IMAGE)
+                else if (clickLocation == MouseLocation.END_IMAGE)
                     result = imageCor.IsInRectangle(_points[i].EndImagePoint - halfMarkerSize, _points[i].EndImagePoint + halfMarkerSize);
 
                 if (result)
-                {
-                    _points.RemoveAt(i);
-                    break;
-                }
+                    return i;
             }
+
+            return -1;
         }
 
-        public override void OnMouseMove(MouseLocation clickLocation, Vector imageCor)
+        public override void OnLeftMouseButtonDown(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel)
         {
+            if (clickLocation == MouseLocation.NONE)
+                return;
+
+            // hit an existing?
+            _selectedPoint = MarkerHitTest(clickLocation, imageCor, imageSizePixel);
+            if (_selectedPoint >= 0)
+                return;
+
+            var newMarker = new PointMarker()
+            {
+                StartImagePoint = imageCor,
+                EndImagePoint = imageCor,
+                InterpolatedImageVector = imageCor
+            };
+            _points.Add(newMarker);
+            _selectedPoint = _points.Count - 1;
+        }
+
+        public override void OnMouseMove(MarkerSet.MouseLocation clickLocation, Vector imageCor)
+        {
+            if (clickLocation == MouseLocation.NONE || _selectedPoint < 0)
+                return;
+
+            _points[_selectedPoint][clickLocation] = imageCor;
+        }
+
+        public override void OnLeftMouseButtonUp()
+        {
+            _selectedPoint = -1;
+        }
+     
+        public override void OnRightMouseButtonDown(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel)
+        {
+            if (clickLocation == MouseLocation.NONE)
+                return;
+
+            int markerIndex = MarkerHitTest(clickLocation, imageCor, imageSizePixel);
+            if (markerIndex >= 0)
+            {
+                _points.RemoveAt(markerIndex);
+                _selectedPoint = -1;
+            }
         }
 
         public override void UpdateInterpolation(float interpolation)
@@ -82,19 +153,19 @@ namespace MorphingTool
                 // brute force way - todo: move exiting elements (identifing by name), delete obsolte ones and create new ones
                 imageCanvas[i].Children.Clear();
 
-                foreach (var marker in _points)
+                for (int markerIdx = 0; markerIdx < _points.Count; ++markerIdx)
                 {
                     var markerRect = new Rectangle();
                     markerRect.Width = MARKER_RENDER_SIZE;
                     markerRect.Height = MARKER_RENDER_SIZE;
-                    markerRect.Stroke = new SolidColorBrush(Colors.Black);
+                    markerRect.Stroke = new SolidColorBrush(_selectedPoint == markerIdx ? Colors.Red : Colors.Black);
                     markerRect.StrokeThickness = 2;
-                    markerRect.Fill = new SolidColorBrush(Colors.White);
+                    markerRect.Fill = new SolidColorBrush(_selectedPoint == markerIdx ? Colors.Wheat : Colors.White);
                     markerRect.RadiusX = MARKER_RENDER_SIZE / 4;
                     markerRect.RadiusY = MARKER_RENDER_SIZE / 4;
 
-                    Canvas.SetLeft(markerRect, marker.StartImagePoint.X * imageSizePixel[i].X + imageOffsetPixel[i].X - MARKER_RENDER_SIZE / 2);
-                    Canvas.SetTop(markerRect, marker.StartImagePoint.Y * imageSizePixel[i].Y + imageOffsetPixel[i].Y - MARKER_RENDER_SIZE / 2);
+                    Canvas.SetLeft(markerRect, _points[markerIdx][(MouseLocation)i].X * imageSizePixel[i].X + imageOffsetPixel[i].X - MARKER_RENDER_SIZE / 2);
+                    Canvas.SetTop(markerRect, _points[markerIdx][(MouseLocation)i].Y * imageSizePixel[i].Y + imageOffsetPixel[i].Y - MARKER_RENDER_SIZE / 2);
 
                     imageCanvas[i].Children.Add(markerRect);
                 }

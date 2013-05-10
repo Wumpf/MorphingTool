@@ -20,13 +20,14 @@ namespace MorphingTool
 
         public enum MouseLocation
         {
-            START_IMAGE,
-            END_IMAGE,
-            NONE
+            START_IMAGE = 0,
+            END_IMAGE = 1,
+            NONE = -1
         }
 
-        public abstract void OnLeftClick(MouseLocation clickLocation, Vector imageCor);
-        public abstract void OnRightClick(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel);
+        public abstract void OnLeftMouseButtonDown(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel);
+        public abstract void OnLeftMouseButtonUp();
+        public abstract void OnRightMouseButtonDown(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel);
         public abstract void OnMouseMove(MouseLocation clickLocation, Vector imageCor);
 
         /// <summary>

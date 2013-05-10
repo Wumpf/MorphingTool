@@ -178,33 +178,36 @@ namespace MorphingTool
             UpdateOutputImageContent();
         }
 
-        private Vector ComputeRelativeImagePositionFromMouseEvent(object sender, MouseButtonEventArgs e)
+        private Vector ComputeRelativeImagePositionFromMouseEvent(object sender, MouseEventArgs e)
         {
             var pos = e.GetPosition(sender as IInputElement);
             return new Vector((float)(pos.X / ((Image)sender).ActualWidth), (float)(pos.Y / ((Image)sender).ActualHeight));
         }
 
-        private void StartImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            _morphingAlgorithm.MarkerSet.OnLeftClick(MarkerSet.MouseLocation.START_IMAGE, ComputeRelativeImagePositionFromMouseEvent(sender, e));
+            MarkerSet.MouseLocation location = sender == StartImage ? MarkerSet.MouseLocation.START_IMAGE : MarkerSet.MouseLocation.END_IMAGE;
+            _morphingAlgorithm.MarkerSet.OnLeftMouseButtonDown(location, ComputeRelativeImagePositionFromMouseEvent(sender, e),
+                                                        new Vector(((Image)sender).ActualWidth, ((Image)sender).ActualHeight));
             UpdateMarkerCanvases();
         }
-        private void StartImage_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        private void Image_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            _morphingAlgorithm.MarkerSet.OnRightClick(MarkerSet.MouseLocation.START_IMAGE, ComputeRelativeImagePositionFromMouseEvent(sender, e),
-                                                        new Vector(StartImage.ActualWidth, StartImage.ActualHeight));
+            MarkerSet.MouseLocation location = sender == StartImage ? MarkerSet.MouseLocation.START_IMAGE : MarkerSet.MouseLocation.END_IMAGE;
+            _morphingAlgorithm.MarkerSet.OnRightMouseButtonDown(location, ComputeRelativeImagePositionFromMouseEvent(sender, e),
+                                                        new Vector(((Image)sender).ActualWidth, ((Image)sender).ActualHeight));
             UpdateMarkerCanvases();
         }
-
-        private void EndImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Image_MouseMove(object sender, MouseEventArgs e)
         {
-            _morphingAlgorithm.MarkerSet.OnLeftClick(MarkerSet.MouseLocation.END_IMAGE, ComputeRelativeImagePositionFromMouseEvent(sender, e));
+            MarkerSet.MouseLocation location = sender == StartImage ? MarkerSet.MouseLocation.START_IMAGE : MarkerSet.MouseLocation.END_IMAGE;
+            _morphingAlgorithm.MarkerSet.OnMouseMove(location, ComputeRelativeImagePositionFromMouseEvent(sender, e));
             UpdateMarkerCanvases();
         }
-        private void EndImage_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+      
+        private void Image_MarkerDeselect(object sender, MouseEventArgs e)
         {
-            _morphingAlgorithm.MarkerSet.OnRightClick(MarkerSet.MouseLocation.END_IMAGE, ComputeRelativeImagePositionFromMouseEvent(sender, e),
-                                                        new Vector(EndImage.ActualWidth, EndImage.ActualHeight));
+            _morphingAlgorithm.MarkerSet.OnLeftMouseButtonUp();
             UpdateMarkerCanvases();
         }
 
