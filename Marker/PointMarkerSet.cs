@@ -15,14 +15,14 @@ namespace MorphingTool
 
         public class PointMarker
         {
-            public ImagePosition StartImagePoint;
-            public ImagePosition EndImagePoint;
-            public ImagePosition InterpolatedImagePoint;
+            public Vector StartImagePoint;
+            public Vector EndImagePoint;
+            public Vector InterpolatedImageVector;
         };
 
-        private List<PointMarker> points = new List<PointMarker>();
+        private List<PointMarker> _points = new List<PointMarker>();
 
-        public override void OnLeftClick(MouseLocation clickLocation, ImagePosition imageCor)
+        public override void OnLeftClick(MouseLocation clickLocation, Vector imageCor)
         {
             if (clickLocation == MouseLocation.NONE)
                 return;
@@ -31,16 +31,37 @@ namespace MorphingTool
             {
                 StartImagePoint = imageCor,
                 EndImagePoint = imageCor,
-                InterpolatedImagePoint = imageCor
+                InterpolatedImageVector = imageCor
             };
-            points.Add(newMarker);
+            _points.Add(newMarker);
         }
 
-        public override void OnRightClick(MouseLocation clickLocation, ImagePosition imageCor)
+        public override void OnRightClick(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel)
         {
+            if (clickLocation == MouseLocation.NONE)
+                return;
+
+            Vector halfMarkerSize = new Vector(MARKER_RENDER_SIZE / imageSizePixel.X, MARKER_RENDER_SIZE / imageSizePixel.Y) * 0.5f;
+
+            // delete Vectors!
+            // find corresonding
+            for (int i = 0; i < _points.Count; ++i)
+            {
+                bool result = false;
+                if (clickLocation == MouseLocation.START_IMAGE)
+                    result = imageCor.IsInRectangle(_points[i].StartImagePoint - halfMarkerSize, _points[i].StartImagePoint + halfMarkerSize);
+                else if (clickLocation == MouseLocation.START_IMAGE)
+                    result = imageCor.IsInRectangle(_points[i].EndImagePoint - halfMarkerSize, _points[i].EndImagePoint + halfMarkerSize);
+
+                if (result)
+                {
+                    _points.RemoveAt(i);
+                    break;
+                }
+            }
         }
 
-        public override void OnMouseMove(MouseLocation clickLocation, ImagePosition imageCor)
+        public override void OnMouseMove(MouseLocation clickLocation, Vector imageCor)
         {
         }
 
@@ -48,11 +69,11 @@ namespace MorphingTool
         {
             base.UpdateInterpolation(interpolation);
 
-            foreach (var marker in points)
-                marker.InterpolatedImagePoint = ImagePosition.Lerp(marker.StartImagePoint, marker.EndImagePoint, interpolation);
+            foreach (var marker in _points)
+                marker.InterpolatedImageVector = marker.StartImagePoint.Lerp(marker.EndImagePoint, interpolation);
         }
 
-        public override void UpdateMarkerCanvas(Canvas[] imageCanvas, Point[] imageOffsetPixel, Point[] imageSizePixel)
+        public override void UpdateMarkerCanvas(Canvas[] imageCanvas, Vector[] imageOffsetPixel, Vector[] imageSizePixel)
         {
             System.Diagnostics.Debug.Assert(imageCanvas.Length == imageOffsetPixel.Length && imageOffsetPixel.Length == imageSizePixel.Length);
 
@@ -61,7 +82,7 @@ namespace MorphingTool
                 // brute force way - todo: move exiting elements (identifing by name), delete obsolte ones and create new ones
                 imageCanvas[i].Children.Clear();
 
-                foreach (var marker in points)
+                foreach (var marker in _points)
                 {
                     var markerRect = new Rectangle();
                     markerRect.Width = MARKER_RENDER_SIZE;

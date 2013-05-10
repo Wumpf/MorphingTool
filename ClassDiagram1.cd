@@ -64,11 +64,11 @@
       <FileName>MarkerSet.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="MorphingTool.PointMarkerSet">
+  <Class Name="MorphingTool.VectorMarkerSet">
     <Position X="1.75" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>PointMarkerSet.cs</FileName>
+      <FileName>VectorMarkerSet.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MorphingTool.AlphaBlendDissolver">

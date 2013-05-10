@@ -56,7 +56,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Color.cs" />
-    <Compile Include="ImagePosition.cs" />
+    <Compile Include="Point.cs" />
     <Compile Include="Warping\RadialFunctionsWarping.cs" />
     <Compile Include="Warping\WarpingAlgorithm.cs" />
     <Page Include="MainWindow.xaml">

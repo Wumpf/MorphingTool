@@ -75,7 +75,7 @@ namespace MorphingTool
             }
 
             /// <summary>
-            /// Samples the image data withnormalized 0-1 floating point coordinates.
+            /// Samples the image data withnormalized 0-1 floating Vector coordinates.
             /// </summary>
             /// <returns>Sampled Color</returns>
             public Color SampleLinear(float x, float y)

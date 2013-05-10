@@ -25,9 +25,9 @@ namespace MorphingTool
             NONE
         }
 
-        public abstract void OnLeftClick(MouseLocation clickLocation, ImagePosition imageCor);
-        public abstract void OnRightClick(MouseLocation clickLocation, ImagePosition imageCor);
-        public abstract void OnMouseMove(MouseLocation clickLocation, ImagePosition imageCor);
+        public abstract void OnLeftClick(MouseLocation clickLocation, Vector imageCor);
+        public abstract void OnRightClick(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel);
+        public abstract void OnMouseMove(MouseLocation clickLocation, Vector imageCor);
 
         /// <summary>
         /// Updates the coordinates/representation of the interpolated marker
@@ -38,6 +38,6 @@ namespace MorphingTool
             lastInterpolationFactor = interpolation;
         }
 
-        public abstract void UpdateMarkerCanvas(Canvas[] imageCanvas, Point[] imageOffsetPixel, Point[] imageSizePixel);
+        public abstract void UpdateMarkerCanvas(Canvas[] imageCanvas, Vector[] imageOffsetPixel, Vector[] imageSizePixel);
     }
 }

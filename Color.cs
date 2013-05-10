@@ -6,7 +6,7 @@ using System.Text;
 namespace MorphingTool
 {
     /// <summary>
-    /// Since pointers to any data structure with managed attributes are prohibited, there is an own simple Color class.
+    /// Since Vectorers to any data structure with managed attributes are prohibited, there is an own simple Color class.
     /// </summary>
     public struct Color
     {
