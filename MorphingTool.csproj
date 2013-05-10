@@ -55,6 +55,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Color.cs" />
+    <Compile Include="ImagePosition.cs" />
+    <Compile Include="Warping\RadialFunctionsWarping.cs" />
+    <Compile Include="Warping\WarpingAlgorithm.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -72,9 +76,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MarkerSet.cs" />
+    <Compile Include="Marker\MarkerSet.cs" />
     <Compile Include="Morphing.cs" />
-    <Compile Include="PointMarkerSet.cs" />
+    <Compile Include="Marker\PointMarkerSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

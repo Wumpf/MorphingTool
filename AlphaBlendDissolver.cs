@@ -32,15 +32,15 @@ namespace MorphingTool
             float xStep = 1.0f / width;
             unsafe
             {
-                Morphing.Color* outputData = (Morphing.Color*)outputImage.BackBuffer;
+                Color* outputData = (Color*)outputImage.BackBuffer;
                 Parallel.For(0, outputImage.PixelHeight, yi =>
                 {
-                    Morphing.Color* outputDataPixel = outputData + yi * width;
-                    Morphing.Color* lastOutputDataPixel = outputDataPixel + width;
+                    Color* outputDataPixel = outputData + yi * width;
+                    Color* lastOutputDataPixel = outputDataPixel + width;
                     float y = (float)yi / height;
                     for (float x = 0; outputDataPixel != lastOutputDataPixel; x += xStep, ++outputDataPixel)
                     {
-                        *outputDataPixel = Morphing.Color.Lerp(startImage.SampleLinear(x, y), endImage.SampleLinear(x, y), percentage);
+                        *outputDataPixel = Color.Lerp(startImage.SampleLinear(x, y), endImage.SampleLinear(x, y), percentage);
                     }
                 });
             }

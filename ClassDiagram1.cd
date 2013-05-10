@@ -29,6 +29,9 @@
   <Class Name="MorphingTool.Morphing">
     <Position X="7.25" Y="0.75" Width="3.25" />
     <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
@@ -37,17 +40,17 @@
           <NewMemberFileName>Morphing.cs</NewMemberFileName>
         </TypeIdentifier>
       </Enum>
+      <Struct Name="MorphingTool.Color" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Morphing.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
       <Class Name="MorphingTool.Morphing.ImageData" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>Morphing.cs</NewMemberFileName>
         </TypeIdentifier>
         <Lollipop Position="0.2" />
       </Class>
-      <Struct Name="MorphingTool.Morphing.Color" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Morphing.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Struct>
     </NestedTypes>
     <TypeIdentifier>
       <HashCode>AAAAAAEAAAAEAAARBAAAAAEAAAgAgAAAIAAAAAAAAAA=</HashCode>
@@ -69,10 +72,18 @@
     </TypeIdentifier>
   </Class>
   <Class Name="MorphingTool.AlphaBlendDissolver">
-    <Position X="11.75" Y="2.75" Width="1.5" />
+    <Position X="11.75" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>AlphaBlendDissolver.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MorphingTool.RadialFunctionsWarping">
+    <Position X="4" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>RadialFunctionsWarping.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -81,6 +92,13 @@
     <TypeIdentifier>
       <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>CrossDissolver.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MorphingTool.WarpingAlgorithm">
+    <Position X="4" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>WarpingAlgorithm.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />

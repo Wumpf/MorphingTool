@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MorphingTool
 {
-    public class PointMarkerSet : MarkerSet
+    public class RadialFunctionsWarping : WarpingAlgorithm
     {
     }
 }
