@@ -96,6 +96,7 @@ namespace MorphingTool
 
             float progress = (float)(ProgressBar.Value / ProgressBar.Maximum);
             _morphingAlgorithm.MorphImages(progress, OutputImage.Source as WriteableBitmap);
+            UpdateMarkerCanvases();
         }
 
         /// <summary>
@@ -160,6 +161,9 @@ namespace MorphingTool
             UpdateMarkerCanvases();
         }
 
+        /// <summary>
+        /// Updates the rendering of all canvases with markers.
+        /// </summary>
         private void UpdateMarkerCanvases()
         {
             var startImageOffset = new Vector((StartImageMarkerCanvas.ActualWidth - StartImage.ActualWidth) / 2, (StartImageMarkerCanvas.ActualHeight - StartImage.ActualHeight) / 2);
@@ -201,7 +205,8 @@ namespace MorphingTool
         private void Image_MouseMove(object sender, MouseEventArgs e)
         {
             MarkerSet.MouseLocation location = sender == StartImage ? MarkerSet.MouseLocation.START_IMAGE : MarkerSet.MouseLocation.END_IMAGE;
-            _morphingAlgorithm.MarkerSet.OnMouseMove(location, ComputeRelativeImagePositionFromMouseEvent(sender, e));
+            _morphingAlgorithm.MarkerSet.OnMouseMove(location, ComputeRelativeImagePositionFromMouseEvent(sender, e),
+                                                        new Vector(((Image)sender).ActualWidth, ((Image)sender).ActualHeight));
             UpdateMarkerCanvases();
         }
       

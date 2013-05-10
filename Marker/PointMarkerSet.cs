@@ -60,7 +60,8 @@ namespace MorphingTool
         };
 
         private List<PointMarker> _points = new List<PointMarker>();
-        private int _selectedPoint = -1;
+        private int _selectedMarker = -1;
+        private int _hoveredMarker = -1;
 
         /// <summary>
         /// Checks if a click is on a marker-point
@@ -96,8 +97,8 @@ namespace MorphingTool
                 return;
 
             // hit an existing?
-            _selectedPoint = MarkerHitTest(clickLocation, imageCor, imageSizePixel);
-            if (_selectedPoint >= 0)
+            _selectedMarker = MarkerHitTest(clickLocation, imageCor, imageSizePixel);
+            if (_selectedMarker >= 0)
                 return;
 
             var newMarker = new PointMarker()
@@ -107,20 +108,26 @@ namespace MorphingTool
                 InterpolatedImageVector = imageCor
             };
             _points.Add(newMarker);
-            _selectedPoint = _points.Count - 1;
+            _selectedMarker = _points.Count - 1;
         }
 
-        public override void OnMouseMove(MarkerSet.MouseLocation clickLocation, Vector imageCor)
+        public override void OnMouseMove(MarkerSet.MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel)
         {
-            if (clickLocation == MouseLocation.NONE || _selectedPoint < 0)
+            if (clickLocation == MouseLocation.NONE)
                 return;
 
-            _points[_selectedPoint][clickLocation] = imageCor;
+            _hoveredMarker = MarkerHitTest(clickLocation, imageCor, imageSizePixel);
+
+            if (_selectedMarker >= 0)
+            {
+                _points[_selectedMarker][clickLocation] = imageCor;
+                _points[_selectedMarker].InterpolatedImageVector = _points[_selectedMarker].StartImagePoint.Lerp(_points[_selectedMarker].EndImagePoint, _lastInterpolationFactor);
+            }
         }
 
         public override void OnLeftMouseButtonUp()
         {
-            _selectedPoint = -1;
+            _selectedMarker = -1;
         }
      
         public override void OnRightMouseButtonDown(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel)
@@ -132,7 +139,7 @@ namespace MorphingTool
             if (markerIndex >= 0)
             {
                 _points.RemoveAt(markerIndex);
-                _selectedPoint = -1;
+                _selectedMarker = -1;
             }
         }
 
@@ -158,9 +165,24 @@ namespace MorphingTool
                     var markerRect = new Rectangle();
                     markerRect.Width = MARKER_RENDER_SIZE;
                     markerRect.Height = MARKER_RENDER_SIZE;
-                    markerRect.Stroke = new SolidColorBrush(_selectedPoint == markerIdx ? Colors.Red : Colors.Black);
                     markerRect.StrokeThickness = 2;
-                    markerRect.Fill = new SolidColorBrush(_selectedPoint == markerIdx ? Colors.Wheat : Colors.White);
+
+                    if (_selectedMarker == markerIdx)
+                    {
+                        markerRect.Stroke = new SolidColorBrush( Colors.Red);
+                        markerRect.Fill = new SolidColorBrush(Colors.Wheat);
+                    }
+                    else if (_hoveredMarker == markerIdx)
+                    {
+                         markerRect.Stroke = new SolidColorBrush(Colors.DarkRed);
+                         markerRect.Fill = new SolidColorBrush(Colors.Wheat);
+                    }
+                    else
+                    {
+                        markerRect.Stroke = new SolidColorBrush(Colors.Black);
+                        markerRect.Fill = new SolidColorBrush(Colors.White);
+                    }
+
                     markerRect.RadiusX = MARKER_RENDER_SIZE / 4;
                     markerRect.RadiusY = MARKER_RENDER_SIZE / 4;
 

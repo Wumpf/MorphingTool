@@ -16,7 +16,7 @@ namespace MorphingTool
         /// <summary>
         /// Last used interpolation factor. Will be kept to determine the interpolated position of new Markers.
         /// </summary>
-        protected float lastInterpolationFactor;
+        protected float _lastInterpolationFactor;
 
         public enum MouseLocation
         {
@@ -28,7 +28,7 @@ namespace MorphingTool
         public abstract void OnLeftMouseButtonDown(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel);
         public abstract void OnLeftMouseButtonUp();
         public abstract void OnRightMouseButtonDown(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel);
-        public abstract void OnMouseMove(MouseLocation clickLocation, Vector imageCor);
+        public abstract void OnMouseMove(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel);
 
         /// <summary>
         /// Updates the coordinates/representation of the interpolated marker
@@ -36,9 +36,13 @@ namespace MorphingTool
         /// <param name="interpolation">Interpolation from 0 (startimage) to 1 (endimage)</param>
         public virtual void UpdateInterpolation(float interpolation)
         {
-            lastInterpolationFactor = interpolation;
+            _lastInterpolationFactor = interpolation;
         }
 
+        /// <summary>
+        /// Updates objects on given canvas. This means, this function will update the rendering of the marker.
+        /// Attention: All objects on the Canvas will be deleted!
+        /// </summary>
         public abstract void UpdateMarkerCanvas(Canvas[] imageCanvas, Vector[] imageOffsetPixel, Vector[] imageSizePixel);
     }
 }
