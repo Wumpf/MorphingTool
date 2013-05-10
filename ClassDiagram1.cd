@@ -27,7 +27,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="MorphingTool.Morphing">
-    <Position X="7.25" Y="1.25" Width="3.25" />
+    <Position X="7.25" Y="0.75" Width="3.25" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -62,14 +62,14 @@
     </TypeIdentifier>
   </Class>
   <Class Name="MorphingTool.PointMarkerSet">
-    <Position X="2.5" Y="4.5" Width="1.5" />
+    <Position X="1.75" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>PointMarkerSet.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MorphingTool.AlphaBlendDissolver">
-    <Position X="9.75" Y="5.25" Width="1.5" />
+    <Position X="11.75" Y="2.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>AlphaBlendDissolver.cs</FileName>
@@ -77,7 +77,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Interface Name="MorphingTool.CrossDissolver">
-    <Position X="11.75" Y="5" Width="1.5" />
+    <Position X="11.75" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>CrossDissolver.cs</FileName>

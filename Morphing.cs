@@ -38,11 +38,33 @@ namespace MorphingTool
         /// </summary>
         public struct Color
         {
+            public Color(byte B, byte G, byte R)
+            {
+                this.B = B;
+                this.G = G;
+                this.R = R;
+                this.A = 255;
+            }
+
             public byte B;
             public byte G;
             public byte R;
             public byte A;
-        }
+
+            /// <summary>
+            /// performs a linear interpolation between two colors
+            /// </summary>
+            /// <param name="a">first color</param>
+            /// <param name="b">second color</param>
+            /// <param name="interp">interpolation factor [0;1]</param>
+            /// <returns>Linear interpolation between the two colors</returns>
+            public static Color Lerp(Color a, Color b, float interp)
+            {
+                return new Color((byte)(a.B + (float)(b.B - a.B) * interp),
+                                 (byte)(a.G + (float)(b.G - a.G) * interp),
+                                 (byte)(a.R + (float)(b.R - a.R) * interp));
+            }
+        };
 
         /// <summary>
         /// Intern representation of Image Data.
@@ -76,6 +98,18 @@ namespace MorphingTool
                 System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)Data);
                 Data = null;
             }
+
+            /// <summary>
+            /// Samples the image data withnormalized 0-1 floating point coordinates.
+            /// </summary>
+            /// <returns>Sampled Color</returns>
+            public Color SampleLinear(float x, float y)
+            {
+                System.Diagnostics.Debug.Assert(x >= 0.0f && y >= 0.0f && x <= 1.0f && y <= 1.0f);
+                int coordFloorX = (int)(x * Width);
+                int coordFloorY = (int)(y * Height);
+                return Data[coordFloorX + coordFloorY * Width];
+            } 
         };
 
         /// <summary>
@@ -154,8 +188,6 @@ namespace MorphingTool
         /// <summary>
         /// Performs morphing between two images using the given algorithm and feature-markers.
         /// </summary>
-        /// <param name="startImage">Image for morphingProgress=0</param>
-        
         /// <param name="morphingProgress">Morph-percentage from 0 to 1</param>
         /// <param name="outputImage">target for image output data</param>
         public void MorphImages(float morphingProgress, WriteableBitmap outputImage)

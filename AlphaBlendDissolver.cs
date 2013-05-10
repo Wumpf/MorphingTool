@@ -26,19 +26,21 @@ namespace MorphingTool
             System.Diagnostics.Debug.Assert(startImage != null && endImage != null && outputImage != null);
 
             outputImage.Lock();
-            
+           
+            int width = outputImage.PixelWidth;
+            int height = outputImage.PixelHeight;
+            float xStep = 1.0f / width;
             unsafe
             {
-                UInt32* outputData = (UInt32*)outputImage.BackBuffer;
-                int width = outputImage.PixelWidth;
-                Parallel.For(0, outputImage.PixelHeight, y =>
+                Morphing.Color* outputData = (Morphing.Color*)outputImage.BackBuffer;
+                Parallel.For(0, outputImage.PixelHeight, yi =>
                 {
-                    UInt32* outputDataPixel = outputData + y * width;
-                    for (int x = 0; x < width; ++x)
+                    Morphing.Color* outputDataPixel = outputData + yi * width;
+                    Morphing.Color* lastOutputDataPixel = outputDataPixel + width;
+                    float y = (float)yi / height;
+                    for (float x = 0; outputDataPixel != lastOutputDataPixel; x += xStep, ++outputDataPixel)
                     {
-                        byte grayness = (byte)(255 * percentage);
-                        *outputDataPixel = ImageUtilities.ColorToUInt(Color.FromRgb(grayness, grayness, grayness));
-                        ++outputDataPixel;
+                        *outputDataPixel = Morphing.Color.Lerp(startImage.SampleLinear(x, y), endImage.SampleLinear(x, y), percentage);
                     }
                 });
             }

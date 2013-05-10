@@ -145,7 +145,10 @@ namespace MorphingTool
             int width = (int)Math.Max(((BitmapSource)StartImage.Source).PixelWidth, ((BitmapSource)EndImage.Source).PixelWidth);
             int height = (int)Math.Max(((BitmapSource)StartImage.Source).PixelHeight, ((BitmapSource)EndImage.Source).PixelHeight);
             OutputImage.Source = new WriteableBitmap(width, height, 0.0f, 0.0f, PixelFormats.Bgra32, null);
-            
+            OutputImage.UpdateLayout();
+            StartImage.UpdateLayout();
+            EndImage.UpdateLayout();
+
             // setup for morphing
             _morphingAlgorithm.SetStartImage(StartImage.Source as BitmapSource);
             _morphingAlgorithm.SetEndImage(EndImage.Source as BitmapSource);
