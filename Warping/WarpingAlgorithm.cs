@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MorphingTool
 {
-    public interface WarpingAlgorithm
+    interface WarpingAlgorithm
     {
         unsafe void WarpImage(MarkerSet markerSet, Morphing.ImageData inputImage, Morphing.ImageData outputImage, bool startImage);
     }

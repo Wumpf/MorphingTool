@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace MorphingTool
 {
@@ -14,20 +16,111 @@ namespace MorphingTool
     public abstract class MarkerSet
     {
         /// <summary>
+        /// Marker interface for basic functions.
+        /// </summary>
+        public abstract class IMarker
+        {
+            public abstract void UpdateInterpolatedMarker(float interp);
+        }
+
+        /// <summary>
+        /// Abstract Marker Template. Provides unified access functions
+        /// </summary>
+        /// <typeparam name="T">Type of Marker per Image.</typeparam>
+        public abstract class Marker<T> : IMarker
+        {
+            public T StartMarker;
+            public T EndMarker;
+            public T InterpolatedMarker;
+
+            /// <summary>
+            /// Access by index.
+            /// </summary>
+            /// <param name="element">0: StartImagePoint
+            /// 1: EndImagePoint
+            /// 2: InterpolatedImageVector</param>
+            /// <returns>Relative image position value.</returns>
+            public T this[MouseLocation element]
+            {
+                get
+                {
+                    switch (element)
+                    {
+                        case MouseLocation.START_IMAGE:
+                            return StartMarker;
+                        case MouseLocation.END_IMAGE:
+                            return EndMarker;
+                        case MouseLocation.OUTPUT_IMAGE:
+                            return InterpolatedMarker;
+                    }
+                    throw new Exception("PointMarker has only 3 Elements!");
+                }
+                set
+                {
+                    switch (element)
+                    {
+                        case MouseLocation.START_IMAGE:
+                            StartMarker = value;
+                            break;
+                        case MouseLocation.END_IMAGE:
+                            EndMarker = value;
+                            break;
+                        case MouseLocation.OUTPUT_IMAGE:
+                            InterpolatedMarker = value;
+                            break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Intern list of all markers.
+        /// </summary>
+        protected List<IMarker> _markerList = new List<IMarker>();
+
+        /// <summary>
         /// Last used interpolation factor. Will be kept to determine the interpolated position of new Markers.
         /// </summary>
         protected float _lastInterpolationFactor;
 
+        /// <summary>
+        /// Possible Location for mouse actions
+        /// </summary>
         public enum MouseLocation
         {
             START_IMAGE = 0,
             END_IMAGE = 1,
+            OUTPUT_IMAGE = 2,
             NONE = -1
         }
-
+        
+        /// <summary>
+        /// Performs action for left mouse button down on one of the 3 image areas. Usually sets a Marker.
+        /// </summary>
+        /// <param name="clickLocation">Clicked image type.</param>
+        /// <param name="imageCor">Relative coordinates on the given image.</param>
+        /// <param name="imageSizePixel">Size of the clicked image in pixel</param>
         public abstract void OnLeftMouseButtonDown(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel);
+
+        /// <summary>
+        /// Performs action for left mouse button up on one of the 3 image areas. Usually releases a Marker.
+        /// </summary>
         public abstract void OnLeftMouseButtonUp();
+
+        /// <summary>
+        /// Performs action for right mouse click on one of the 3 image areas. Removes a marker
+        /// </summary>
+        /// <param name="clickLocation">Clicked image type.</param>
+        /// <param name="imageCor">Relative coordinates on the given image.</param>
+        /// <param name="imageSizePixel">Size of the clicked image in pixel</param>
         public abstract void OnRightMouseButtonDown(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel);
+
+        /// <summary>
+        /// Performs action for right mouse click on one of the 3 image areas. Moves a marker or applies hovering effects.
+        /// </summary>
+        /// <param name="clickLocation">Clicked image type.</param>
+        /// <param name="imageCor">Relative coordinates on the given image.</param>
+        /// <param name="imageSizePixel">Size of the clicked image in pixel</param>
         public abstract void OnMouseMove(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel);
 
         /// <summary>
@@ -37,6 +130,8 @@ namespace MorphingTool
         public virtual void UpdateInterpolation(float interpolation)
         {
             _lastInterpolationFactor = interpolation;
+            foreach (var marker in _markerList)
+                marker.UpdateInterpolatedMarker(interpolation);
         }
 
         /// <summary>
@@ -44,5 +139,72 @@ namespace MorphingTool
         /// Attention: All objects on the Canvas will be deleted!
         /// </summary>
         public abstract void UpdateMarkerCanvas(Canvas[] imageCanvas, Vector[] imageOffsetPixel, Vector[] imageSizePixel);
+
+        /// <summary>
+        /// Basic pixel size value for marker rendering.
+        /// </summary>
+        protected const int MARKER_RENDER_SIZE = 10;
+
+        /// <summary>
+        /// Adds point marker renderings to a canvas.
+        /// </summary>
+        protected void AddPointsToCanvases(IEnumerable<Vector> pointsPerCanvas, int selectedPoint, int hoveredPoint,
+                                            Canvas imageCanvas, Vector imageOffsetPixel, Vector imageSizePixel)
+        {
+            int markerIdx = 0;
+            foreach(Vector point in pointsPerCanvas)
+            {
+                var markerRect = new Rectangle();
+                markerRect.Width = MARKER_RENDER_SIZE;
+                markerRect.Height = MARKER_RENDER_SIZE;
+                markerRect.StrokeThickness = 2;
+
+                if (selectedPoint == markerIdx)
+                {
+                    markerRect.Stroke = new SolidColorBrush(Colors.Red);
+                    markerRect.Fill = new SolidColorBrush(Colors.Wheat);
+                }
+                else if (hoveredPoint == markerIdx)
+                {
+                    markerRect.Stroke = new SolidColorBrush(Colors.DarkRed);
+                    markerRect.Fill = new SolidColorBrush(Colors.Wheat);
+                }
+                else
+                {
+                    markerRect.Stroke = new SolidColorBrush(Colors.Black);
+                    markerRect.Fill = new SolidColorBrush(Colors.White);
+                }
+
+                markerRect.RadiusX = MARKER_RENDER_SIZE / 4;
+                markerRect.RadiusY = MARKER_RENDER_SIZE / 4;
+
+                Canvas.SetLeft(markerRect, point.X * imageSizePixel.X + imageOffsetPixel.X - MARKER_RENDER_SIZE / 2);
+                Canvas.SetTop(markerRect, point.Y * imageSizePixel.Y + imageOffsetPixel.Y - MARKER_RENDER_SIZE / 2);
+
+                imageCanvas.Children.Add(markerRect);
+
+                ++markerIdx;
+            }
+        }
+
+        /// <summary>
+        /// Performs hit test with a set of given marker renderings.
+        /// </summary>
+        protected int PointHitTest(IEnumerable<Vector> points, Vector imageCor, Vector imageSizePixel)
+        {
+            Vector halfMarkerSize = new Vector(MARKER_RENDER_SIZE / imageSizePixel.X, MARKER_RENDER_SIZE / imageSizePixel.Y) * 0.5f;
+
+            // delete Vectors!
+            // find corresonding
+            int i = 0;
+            foreach(Vector point in points)
+            {
+                if (imageCor.IsInRectangle(point - halfMarkerSize, point + halfMarkerSize))
+                    return i;
+                ++i;
+            }
+
+            return -1;
+        }
     }
 }

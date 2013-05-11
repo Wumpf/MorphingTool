@@ -17,9 +17,11 @@ namespace MorphingTool
         /// </summary>
         public enum Algorithm
         {
-            MESH_BASED,
             RADIAL_FUNCTIONS,
             FEATURE_BASED,
+            MESH_BASED,
+
+            NONE
         }
 
         /// <summary>
@@ -34,7 +36,7 @@ namespace MorphingTool
         /// <summary>
         /// currently used algorithm type
         /// </summary>
-        private Algorithm _currentAlgorithmType;
+        private Algorithm _currentAlgorithmType = Algorithm.NONE;
 
         /// <summary>
         /// Algorithm that dissolves two warped Images
@@ -159,6 +161,12 @@ namespace MorphingTool
                             _markerSet = new PointMarkerSet();
                             _warpingAlgorithm = new RadialFunctionsWarping();
                             break;
+                        case Algorithm.FEATURE_BASED:
+                            _markerSet = new LineMarkerSet();
+                            _warpingAlgorithm = new FieldWarping();
+                            break;
+                        default:
+                            throw new Exception("Unknown morphing algorithm!");
                     }
                     _currentAlgorithmType = value;
                 }

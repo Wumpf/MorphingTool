@@ -59,7 +59,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Color.cs" />
+    <Compile Include="MainWindow_Animation.cs" />
+    <Compile Include="Marker\LineMarkerSet.cs" />
     <Compile Include="VectorExtension.cs" />
+    <Compile Include="Warping\FieldWarping.cs" />
     <Compile Include="Warping\RadialFunctionsWarping.cs" />
     <Compile Include="Warping\WarpingAlgorithm.cs" />
     <Page Include="MainWindow.xaml">

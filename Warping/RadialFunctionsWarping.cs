@@ -32,16 +32,16 @@ namespace MorphingTool
             {
                 markers = pointMarkerSet.Points.Select(x => new WarpMarker
                 {
-                    CurrentPos = x.InterpolatedImageVector,
-                    MoveVec = x.StartImagePoint - x.InterpolatedImageVector
+                    CurrentPos = x.InterpolatedMarker,
+                    MoveVec = x.StartMarker - x.InterpolatedMarker
                 }).ToArray();
             }
             else
             {
                 markers = pointMarkerSet.Points.Select(x => new WarpMarker
                 {
-                    CurrentPos = x.InterpolatedImageVector,
-                    MoveVec = x.EndImagePoint - x.InterpolatedImageVector
+                    CurrentPos = x.InterpolatedMarker,
+                    MoveVec = x.EndMarker - x.InterpolatedMarker
                 }).ToArray();
             }
             double xStep = 1.0 / outputImage.Width;

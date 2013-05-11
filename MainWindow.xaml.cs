@@ -1,12 +1,10 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Microsoft.Win32;
-using System.Threading;
-using System.Windows.Threading;
 
 namespace MorphingTool
 {
@@ -20,40 +18,10 @@ namespace MorphingTool
         private BitmapSource _originalStartImage;
         private BitmapSource _originalEndImage;
 
-        private DispatcherTimer _animationPlayer = new DispatcherTimer();
-        private System.Diagnostics.Stopwatch _animationStopWatch = new System.Diagnostics.Stopwatch();
-
         public MainWindow()
         {
             InitializeComponent();
             _animationPlayer.Tick += AnimationPlayerTimeElapsed;
-        }
-
-        private void AnimationPlayerTimeElapsed(object sender, EventArgs e)
-        {
-            double progress = _animationStopWatch.Elapsed.TotalSeconds / (double)Duration.Value;
-
-            // this should raise a changed value event and refresh the image therefore
-            ProgressBar.Value = Math.Min(ProgressBar.Maximum, ProgressBar.Minimum + (ProgressBar.Maximum - ProgressBar.Minimum) * progress);
-
-            if (progress >= 1.0)
-            {
-                if ((bool)Loop.IsChecked)
-                {
-                    // correct interval and restart/keep goin
-                    _animationPlayer.Interval = new TimeSpan(0, 0, 0, 0, (int)((double)Duration.Value / (double)NumFrames.Value * 1000.0));
-                    _animationStopWatch.Restart();
-                }
-                else
-                    StopAutoAnimation();
-            }
-        }
-
-        private void StopAutoAnimation()
-        {
-            _animationPlayer.Stop();
-            ProgressBar.IsEnabled = true;
-            AutoAnimationStartButton.Content = "Start";
         }
 
         /// <summary>
@@ -116,15 +84,13 @@ namespace MorphingTool
         /// </summary>
         private void UpdateOutputImageContent()
         {
+            UpdateMarkerCanvases();
+
             if (OutputImage.Source == null)
                 return;
 
-            lock (this)
-            {
-                float progress = (float)((ProgressBar.Value - ProgressBar.Minimum) / (ProgressBar.Maximum - ProgressBar.Minimum));
-                _morphingAlgorithm.MorphImages(progress, OutputImage.Source as WriteableBitmap);
-                UpdateMarkerCanvases();
-            }
+             float progress = (float)((ProgressBar.Value - ProgressBar.Minimum) / (ProgressBar.Maximum - ProgressBar.Minimum));
+            _morphingAlgorithm.MorphImages(progress, OutputImage.Source as WriteableBitmap);
         }
 
         /// <summary>
@@ -156,7 +122,8 @@ namespace MorphingTool
             _morphingAlgorithm.SetEndImage(EndImage.Source as BitmapSource);
 
             // upate output
-            UpdateOutputImageContent();
+            if(!_animationPlayer.IsEnabled)
+                UpdateOutputImageContent();
 
             // update marker view
             UpdateMarkerCanvases();
@@ -167,15 +134,18 @@ namespace MorphingTool
         /// </summary>
         private void UpdateMarkerCanvases()
         {
-            var startImageOffset = new Vector((StartImageMarkerCanvas.ActualWidth - StartImage.ActualWidth) / 2, (StartImageMarkerCanvas.ActualHeight - StartImage.ActualHeight) / 2);
-            var endImageOffset = new Vector((EndImageMarkerCanvas.ActualWidth - EndImage.ActualWidth) / 2, (EndImageMarkerCanvas.ActualHeight - EndImage.ActualHeight) / 2);
-            var outputImageOffset = new Vector((OutputImageMarkerCanvas.ActualWidth - OutputImage.ActualWidth) / 2, (OutputImageMarkerCanvas.ActualHeight - OutputImage.ActualHeight) / 2);
+            if (_morphingAlgorithm.MarkerSet != null)
+            {
+                var startImageOffset = new Vector((StartImageMarkerCanvas.ActualWidth - StartImage.ActualWidth) / 2, (StartImageMarkerCanvas.ActualHeight - StartImage.ActualHeight) / 2);
+                var endImageOffset = new Vector((EndImageMarkerCanvas.ActualWidth - EndImage.ActualWidth) / 2, (EndImageMarkerCanvas.ActualHeight - EndImage.ActualHeight) / 2);
+                var outputImageOffset = new Vector((OutputImageMarkerCanvas.ActualWidth - OutputImage.ActualWidth) / 2, (OutputImageMarkerCanvas.ActualHeight - OutputImage.ActualHeight) / 2);
 
-            _morphingAlgorithm.MarkerSet.UpdateMarkerCanvas(new Canvas[] { StartImageMarkerCanvas, EndImageMarkerCanvas, OutputImageMarkerCanvas },
-                                                            new Vector[]{startImageOffset, endImageOffset, outputImageOffset},
-                                                            new Vector[]{ new Vector(StartImage.ActualWidth, StartImage.ActualHeight),
-                                                                         new Vector(EndImage.ActualWidth, EndImage.ActualHeight),
-                                                                         new Vector(OutputImage.ActualWidth, OutputImage.ActualHeight) });
+                _morphingAlgorithm.MarkerSet.UpdateMarkerCanvas(new Canvas[] { StartImageMarkerCanvas, EndImageMarkerCanvas, OutputImageMarkerCanvas },
+                                                                new Vector[] { startImageOffset, endImageOffset, outputImageOffset },
+                                                                new Vector[]{ new Vector(StartImage.ActualWidth, StartImage.ActualHeight),
+                                                                             new Vector(EndImage.ActualWidth, EndImage.ActualHeight),
+                                                                             new Vector(OutputImage.ActualWidth, OutputImage.ActualHeight) });
+            }
         }
 
         private void OnProgressChange(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -208,7 +178,8 @@ namespace MorphingTool
             MarkerSet.MouseLocation location = sender == StartImage ? MarkerSet.MouseLocation.START_IMAGE : MarkerSet.MouseLocation.END_IMAGE;
             _morphingAlgorithm.MarkerSet.OnMouseMove(location, ComputeRelativeImagePositionFromMouseEvent(sender, e),
                                                         new Vector(((Image)sender).ActualWidth, ((Image)sender).ActualHeight));
-            UpdateOutputImageContent();
+            if (!_animationPlayer.IsEnabled) 
+                UpdateOutputImageContent();
         }
       
         private void Image_MarkerDeselect(object sender, MouseEventArgs e)
@@ -223,25 +194,11 @@ namespace MorphingTool
             UpdateMarkerCanvases();
         }
 
-        private void NumberOfFrames_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void MorphingTechniqueSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            UpdateOutputImageContent();
-        }
-
-        private void PlayButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (!_animationPlayer.IsEnabled)
-            {
-                ProgressBar.IsEnabled = false;
-                ((Button)sender).Content = "Stop";
-                _animationPlayer.Interval = new TimeSpan(0, 0, 0, 0, (int)((double)Duration.Value / (double)NumFrames.Value * 1000.0));
-                _animationStopWatch.Restart();
-                _animationPlayer.Start();
-            }
-            else
-            {
-                StopAutoAnimation();
-            }
+            ComboBox comboBox = sender as ComboBox;
+            if(comboBox != null)
+                _morphingAlgorithm.AlgorithmType = (Morphing.Algorithm)comboBox.SelectedIndex;
         }
     }
 }
