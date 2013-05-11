@@ -44,7 +44,7 @@ namespace MorphingTool
                     MoveVec = x.EndImagePoint - x.InterpolatedImageVector
                 }).ToArray();
             }
-            float xStep = 1.0f / outputImage.Width;
+            double xStep = 1.0 / outputImage.Width;
 
             Parallel.For(0, outputImage.Height, yi =>
             {

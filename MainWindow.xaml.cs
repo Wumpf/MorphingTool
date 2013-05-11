@@ -5,6 +5,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace MorphingTool
 {
@@ -18,9 +20,40 @@ namespace MorphingTool
         private BitmapSource _originalStartImage;
         private BitmapSource _originalEndImage;
 
+        private DispatcherTimer _animationPlayer = new DispatcherTimer();
+        private System.Diagnostics.Stopwatch _animationStopWatch = new System.Diagnostics.Stopwatch();
+
         public MainWindow()
         {
             InitializeComponent();
+            _animationPlayer.Tick += AnimationPlayerTimeElapsed;
+        }
+
+        private void AnimationPlayerTimeElapsed(object sender, EventArgs e)
+        {
+            double progress = _animationStopWatch.Elapsed.TotalSeconds / (double)Duration.Value;
+
+            // this should raise a changed value event and refresh the image therefore
+            ProgressBar.Value = Math.Min(ProgressBar.Maximum, ProgressBar.Minimum + (ProgressBar.Maximum - ProgressBar.Minimum) * progress);
+
+            if (progress >= 1.0)
+            {
+                if ((bool)Loop.IsChecked)
+                {
+                    // correct interval and restart/keep goin
+                    _animationPlayer.Interval = new TimeSpan(0, 0, 0, 0, (int)((double)Duration.Value / (double)NumFrames.Value * 1000.0));
+                    _animationStopWatch.Restart();
+                }
+                else
+                    StopAutoAnimation();
+            }
+        }
+
+        private void StopAutoAnimation()
+        {
+            _animationPlayer.Stop();
+            ProgressBar.IsEnabled = true;
+            AutoAnimationStartButton.Content = "Start";
         }
 
         /// <summary>
@@ -86,9 +119,12 @@ namespace MorphingTool
             if (OutputImage.Source == null)
                 return;
 
-            float progress = (float)(ProgressBar.Value / ProgressBar.Maximum);
-            _morphingAlgorithm.MorphImages(progress, OutputImage.Source as WriteableBitmap);
-            UpdateMarkerCanvases();
+            lock (this)
+            {
+                float progress = (float)((ProgressBar.Value - ProgressBar.Minimum) / (ProgressBar.Maximum - ProgressBar.Minimum));
+                _morphingAlgorithm.MorphImages(progress, OutputImage.Source as WriteableBitmap);
+                UpdateMarkerCanvases();
+            }
         }
 
         /// <summary>
@@ -100,7 +136,7 @@ namespace MorphingTool
             if (_originalStartImage == null || _originalEndImage == null)
                 return;
 
-            StartImage.Source = _originalEndImage;
+            StartImage.Source = _originalStartImage;
             StartImage.UpdateLayout();
             StartImage.Source = ImageUtilities.CreateResizedImage(_originalStartImage, (int)(StartImage.ActualWidth), (int)(StartImage.ActualHeight));
             EndImage.Source = _originalEndImage;
@@ -185,6 +221,27 @@ namespace MorphingTool
         {
             AdaptInputOutputImages();
             UpdateMarkerCanvases();
+        }
+
+        private void NumberOfFrames_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            UpdateOutputImageContent();
+        }
+
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_animationPlayer.IsEnabled)
+            {
+                ProgressBar.IsEnabled = false;
+                ((Button)sender).Content = "Stop";
+                _animationPlayer.Interval = new TimeSpan(0, 0, 0, 0, (int)((double)Duration.Value / (double)NumFrames.Value * 1000.0));
+                _animationStopWatch.Restart();
+                _animationPlayer.Start();
+            }
+            else
+            {
+                StopAutoAnimation();
+            }
         }
     }
 }

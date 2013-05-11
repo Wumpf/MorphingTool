@@ -103,19 +103,22 @@ namespace MorphingTool
                 return Data[coordFloorX + coordFloorY * Width];*/
             
                 // linear sampling
-                x *= 0.99999999999;  // border stuff... loosing some precision seems to be attractive in this case
-                y *= 0.99999999999;
                 double pixCoordX = x * widthSub1;
                 double pixCoordY = y * heightSub1;
                 int coordFloorX = (int)(pixCoordX);
                 int coordFloorY = (int)(pixCoordY);
-                double fracX = pixCoordX - (int)(pixCoordX);
-                double fracY = coordFloorY - (int)(pixCoordY);
+                double fracX = pixCoordX - coordFloorX;
+                double fracY = coordFloorY - coordFloorY;
 
                 Color* upperLeft = Data + (coordFloorY * Width + coordFloorX);
-                Color* upperRight = upperLeft + 1;
-                Color* lowerLeft = upperLeft + Width;
-                Color* lowerRight = lowerLeft + 1;
+                Color* upperRight = upperLeft;
+                Color* lowerLeft = upperLeft + (coordFloorY != heightSub1 ? Width : 0);
+                Color* lowerRight = lowerLeft;
+                if (coordFloorX != widthSub1)
+                {
+                    ++upperRight;
+                    ++lowerRight;
+                }
 
                 return Color.Lerp(Color.Lerp(*upperLeft, *upperRight, fracX),
                                   Color.Lerp(*lowerLeft, *lowerRight, fracX), fracY);
