@@ -100,42 +100,12 @@ namespace MorphingTool
             if (_originalStartImage == null || _originalEndImage == null)
                 return;
 
-            // scale one of the input images
-     /*     int deltaWidth = _originalStartImage.PixelWidth - _originalEndImage.PixelWidth;
-            int deltaHeight = _originalStartImage.PixelHeight - _originalEndImage.PixelHeight;
-            if (deltaWidth < 0 && deltaHeight < 0)  // start image smaller in every dimension
-            {
-                float sizeFactor;
-                if (Math.Abs(deltaWidth) < Math.Abs(deltaHeight))
-                    sizeFactor = (float)_originalEndImage.PixelWidth / _originalStartImage.PixelWidth;
-                else
-                    sizeFactor = (float)_originalEndImage.PixelHeight / _originalStartImage.PixelHeight;
-
-                StartImage.Source = ImageUtilities.CreateResizedImage(_originalStartImage, (int)(_originalStartImage.PixelWidth * sizeFactor + 0.5f),
-                                                                                           (int)(_originalStartImage.PixelHeight * sizeFactor + 0.5f));
-                EndImage.Source = _originalEndImage;
-            }
-            else if (deltaWidth > 0 && deltaHeight > 0)  // end image smaller in every dimension
-            {
-                float sizeFactor;
-                if (Math.Abs(deltaWidth) < Math.Abs(deltaHeight))
-                    sizeFactor = (float)_originalStartImage.PixelWidth / _originalEndImage.PixelWidth;
-                else
-                    sizeFactor = (float)_originalStartImage.PixelHeight / _originalEndImage.PixelHeight;
-
-                EndImage.Source = ImageUtilities.CreateResizedImage(_originalEndImage, (int)(_originalEndImage.PixelWidth * sizeFactor + 0.5f),
-                                                                                         (int)(_originalEndImage.PixelHeight * sizeFactor + 0.5f));
-                StartImage.Source = _originalStartImage;
-            }
-            else 
-            {
-                StartImage.Source = _originalStartImage;
-                EndImage.Source = _originalEndImage;
-            }*/
+            StartImage.Source = _originalEndImage;
             StartImage.UpdateLayout();
+            StartImage.Source = ImageUtilities.CreateResizedImage(_originalStartImage, (int)(StartImage.ActualWidth), (int)(StartImage.ActualHeight));
+            EndImage.Source = _originalEndImage;
             EndImage.UpdateLayout();
-            StartImage.Source = ImageUtilities.CreateResizedImage(_originalStartImage, (int)(StartImage.ActualWidth + 0.5f), (int)(StartImage.ActualHeight + 0.5f));
-            EndImage.Source = ImageUtilities.CreateResizedImage(_originalEndImage, (int)(EndImage.ActualWidth + 0.5f), (int)(EndImage.ActualHeight + 0.5f));
+            EndImage.Source = ImageUtilities.CreateResizedImage(_originalEndImage, (int)(EndImage.ActualWidth), (int)(EndImage.ActualHeight));
 
             // create output image
             int width = (int)Math.Max(StartImage.ActualWidth, EndImage.ActualWidth);
