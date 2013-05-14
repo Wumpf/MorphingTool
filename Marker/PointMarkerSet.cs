@@ -29,19 +29,19 @@ namespace MorphingTool
         /// Checks if a click is on a marker-point
         /// </summary>
         /// <returns>-1 if none, otherwise markerindex</returns>
-        private int MarkerHitTest(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel)
+        private int MarkerHitTest(Location clickLocation, Vector imageCor, Vector imageSizePixel)
         {
-            if (clickLocation == MouseLocation.START_IMAGE)
+            if (clickLocation == Location.START_IMAGE)
                 return PointHitTest(Points.Select(x => x.StartMarker), imageCor, imageSizePixel);
-            else if (clickLocation == MouseLocation.END_IMAGE)
+            else if (clickLocation == Location.END_IMAGE)
                 return PointHitTest(Points.Select(x => x.EndMarker), imageCor, imageSizePixel);
             else
                 return -1;
         }
 
-        public override void OnLeftMouseButtonDown(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel)
+        public override void OnLeftMouseButtonDown(Location clickLocation, Vector imageCor, Vector imageSizePixel)
         {
-            if (clickLocation == MouseLocation.NONE)
+            if (clickLocation == Location.NONE)
                 return;
 
             // hit an existing?
@@ -59,9 +59,9 @@ namespace MorphingTool
             _markerList.Add(newMarker);
         }
 
-        public override void OnMouseMove(MarkerSet.MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel)
+        public override void OnMouseMove(MarkerSet.Location clickLocation, Vector imageCor, Vector imageSizePixel)
         {
-            if (clickLocation == MouseLocation.NONE)
+            if (clickLocation == Location.NONE)
                 return;
 
             _hoveredMarker = MarkerHitTest(clickLocation, imageCor, imageSizePixel);
@@ -78,9 +78,9 @@ namespace MorphingTool
             _selectedMarker = -1;
         }
 
-        public override void OnRightMouseButtonDown(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel)
+        public override void OnRightMouseButtonDown(Location clickLocation, Vector imageCor, Vector imageSizePixel)
         {
-            if (clickLocation == MouseLocation.NONE)
+            if (clickLocation == Location.NONE)
                 return;
 
             int markerIndex = MarkerHitTest(clickLocation, imageCor, imageSizePixel);
@@ -91,17 +91,12 @@ namespace MorphingTool
             }
         }
 
-        public override void UpdateMarkerCanvas(Canvas[] imageCanvas, Vector[] imageOffsetPixel, Vector[] imageSizePixel)
+        public override void UpdateMarkerCanvas(Location location, Canvas imageCanvas, Vector imageOffsetPixel, Vector imageSizePixel)
         {
-            System.Diagnostics.Debug.Assert(imageCanvas.Length == imageOffsetPixel.Length && imageOffsetPixel.Length == imageSizePixel.Length);
+            // brute force way - todo: move exiting elements (identifing by name), delete obsolte ones and create new ones
+            imageCanvas.Children.Clear();
 
-            for (int i = 0; i < imageCanvas.Length; ++i)
-            {
-                // brute force way - todo: move exiting elements (identifing by name), delete obsolte ones and create new ones
-                imageCanvas[i].Children.Clear();
-
-                AddPointsToCanvases(Points.Select(x => x[(MouseLocation)i]), _selectedMarker, _hoveredMarker, imageCanvas[i], imageOffsetPixel[i], imageSizePixel[i]);
-            }
+            AddPointsToCanvases(Points.Select(x => x[location]), _selectedMarker, _hoveredMarker, imageCanvas, imageOffsetPixel, imageSizePixel);
         }
     }
 }

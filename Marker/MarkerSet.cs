@@ -40,17 +40,17 @@ namespace MorphingTool
             /// 1: EndImagePoint
             /// 2: InterpolatedImageVector</param>
             /// <returns>Relative image position value.</returns>
-            public T this[MouseLocation element]
+            public T this[Location element]
             {
                 get
                 {
                     switch (element)
                     {
-                        case MouseLocation.START_IMAGE:
+                        case Location.START_IMAGE:
                             return StartMarker;
-                        case MouseLocation.END_IMAGE:
+                        case Location.END_IMAGE:
                             return EndMarker;
-                        case MouseLocation.OUTPUT_IMAGE:
+                        case Location.OUTPUT_IMAGE:
                             return InterpolatedMarker;
                     }
                     throw new Exception("PointMarker has only 3 Elements!");
@@ -59,13 +59,13 @@ namespace MorphingTool
                 {
                     switch (element)
                     {
-                        case MouseLocation.START_IMAGE:
+                        case Location.START_IMAGE:
                             StartMarker = value;
                             break;
-                        case MouseLocation.END_IMAGE:
+                        case Location.END_IMAGE:
                             EndMarker = value;
                             break;
-                        case MouseLocation.OUTPUT_IMAGE:
+                        case Location.OUTPUT_IMAGE:
                             InterpolatedMarker = value;
                             break;
                     }
@@ -86,7 +86,7 @@ namespace MorphingTool
         /// <summary>
         /// Possible Location for mouse actions
         /// </summary>
-        public enum MouseLocation
+        public enum Location
         {
             START_IMAGE = 0,
             END_IMAGE = 1,
@@ -100,7 +100,7 @@ namespace MorphingTool
         /// <param name="clickLocation">Clicked image type.</param>
         /// <param name="imageCor">Relative coordinates on the given image.</param>
         /// <param name="imageSizePixel">Size of the clicked image in pixel</param>
-        public abstract void OnLeftMouseButtonDown(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel);
+        public abstract void OnLeftMouseButtonDown(Location clickLocation, Vector imageCor, Vector imageSizePixel);
 
         /// <summary>
         /// Performs action for left mouse button up on one of the 3 image areas. Usually releases a Marker.
@@ -113,7 +113,7 @@ namespace MorphingTool
         /// <param name="clickLocation">Clicked image type.</param>
         /// <param name="imageCor">Relative coordinates on the given image.</param>
         /// <param name="imageSizePixel">Size of the clicked image in pixel</param>
-        public abstract void OnRightMouseButtonDown(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel);
+        public abstract void OnRightMouseButtonDown(Location clickLocation, Vector imageCor, Vector imageSizePixel);
 
         /// <summary>
         /// Performs action for right mouse click on one of the 3 image areas. Moves a marker or applies hovering effects.
@@ -121,7 +121,7 @@ namespace MorphingTool
         /// <param name="clickLocation">Clicked image type.</param>
         /// <param name="imageCor">Relative coordinates on the given image.</param>
         /// <param name="imageSizePixel">Size of the clicked image in pixel</param>
-        public abstract void OnMouseMove(MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel);
+        public abstract void OnMouseMove(Location clickLocation, Vector imageCor, Vector imageSizePixel);
 
         /// <summary>
         /// Updates the coordinates/representation of the interpolated marker
@@ -138,7 +138,7 @@ namespace MorphingTool
         /// Updates objects on given canvas. This means, this function will update the rendering of the marker.
         /// Attention: All objects on the Canvas will be deleted!
         /// </summary>
-        public abstract void UpdateMarkerCanvas(Canvas[] imageCanvas, Vector[] imageOffsetPixel, Vector[] imageSizePixel);
+        public abstract void UpdateMarkerCanvas(Location location, Canvas imageCanvas, Vector imageOffsetPixel, Vector imageSizePixel);
 
         /// <summary>
         /// Basic pixel size value for marker rendering.

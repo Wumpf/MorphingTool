@@ -3,6 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         Title="MainWindow" Height="602.4" Width="1024" SizeChanged="Window_SizeChanged" MinWidth="400" MinHeight="300">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="booleanToVisibility" />
+    </Window.Resources> 
     <Grid Margin="0,0,0,-4">
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -27,14 +30,14 @@
                                         MouseLeftButtonUp="Image_MarkerDeselect" MouseLeave="Image_MarkerDeselect" MouseMove="Image_MouseMove" Margin="0,0,0,5"/>
             <Canvas Name="EndImageMarkerCanvas" Grid.Column="1" IsHitTestVisible="False" Margin="0,0,0,5"/>
             <Image Grid.Row="1" Name="OutputImage" Grid.ColumnSpan="2" Margin="0,5,0,0"/>
-            <Canvas Name="OutputImageMarkerCanvas" Grid.Row="1" Grid.ColumnSpan="2" IsHitTestVisible="False" Margin="0,5,0,0"/>
+            <Canvas Name="OutputImageMarkerCanvas" Grid.Row="1" Grid.ColumnSpan="2" IsHitTestVisible="False" Margin="0,5,0,0" Visibility="{Binding IsChecked,ElementName=ShowOutputMarker,Converter={StaticResource booleanToVisibility}}" />
         </Grid>
         <Button Name="LoadStartImageButton" Content="Load Start Image" Margin="26,10,26,0" VerticalAlignment="Top" Height="20" Click="OnClick_LoadStartImage"/>
         <Button Name="LoadEndImageButton" Content="Load End Image" Margin="26,35,26,0" VerticalAlignment="Top" Height="20" Click="OnClick_LoadEndImage"/>
         <Slider Margin="10,0,10,10" Height="24" VerticalAlignment="Bottom" Grid.Column="1" ValueChanged="OnProgressChange" Name="ProgressBar" Minimum="1" Maximum="{Binding Value, ElementName=NumFrames, ValidatesOnExceptions=True}"  TickFrequency="1" SmallChange="1" IsSnapToTickEnabled="True"/>
 
 
-        <GroupBox Header="Algorithm" Margin="10,64,10,0" Height="183" VerticalAlignment="Top" Name="AlgorithmGroup">
+        <GroupBox Header="Algorithm" Margin="10,64,10,0" Height="60" VerticalAlignment="Top" Name="AlgorithmGroup">
             <Grid Margin="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="89*"/>
@@ -48,7 +51,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="Animation" Margin="10,370,10,0" Height="113" VerticalAlignment="Top">
+        <GroupBox Header="Animation" Margin="10,227,10,0" Height="113" VerticalAlignment="Top">
             <Grid Margin="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="103*"/>
@@ -77,11 +80,16 @@
                 <Label Content="Duration (s):" VerticalAlignment="Top" Margin="0,25,0,0" Height="26"/>
             </Grid>
         </GroupBox>
-        <GroupBox Header="View" Margin="10,252,10,0" Height="113" VerticalAlignment="Top">
+        <GroupBox Header="Output-View" Margin="10,129,10,0" Height="93" VerticalAlignment="Top">
             <Grid Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
                 <RadioButton Content="combined" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="DissolverSetting" IsChecked="True" Name="DissolverSetting_Combined" Checked="DissolverSettingChanged"/>
                 <RadioButton Content="only start" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,20,0,0" GroupName="DissolverSetting" Name="DissolverSetting_StartOnly" Checked="DissolverSettingChanged"/>
                 <RadioButton Content="only end" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,40,0,0" GroupName="DissolverSetting" Name="DissolverSetting_EndOnly" Checked="DissolverSettingChanged"/>
+                <CheckBox Content="show marker" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Name="ShowOutputMarker"/>
 
             </Grid>
         </GroupBox>

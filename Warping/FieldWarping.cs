@@ -21,7 +21,7 @@ namespace MorphingTool
             public Vector dest_perpendicNorm;
         };
 
-        const float LINE_WEIGHT = 0.05f;
+        const float LINE_WEIGHT = 0.03f;
 
         unsafe void WarpingAlgorithm.WarpImage(MarkerSet markerSet, Morphing.ImageData inputImage, Morphing.ImageData outputImage, bool startImage)
         {
