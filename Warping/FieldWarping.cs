@@ -70,6 +70,9 @@ namespace MorphingTool
                 markers[markerIdx].dest_dirNorm.Normalize();
             }
 
+            if (markers.Length == 0)
+                return;
+
 
             Parallel.For(0, outputImage.Height, yi =>
             {
@@ -79,12 +82,13 @@ namespace MorphingTool
 
                 for (double x = 0; outputDataPixel != lastOutputDataPixel; x += xStep, ++outputDataPixel)
                 {
-                    Vector ownPosition = new Vector(x, y);
-                    Vector position = ownPosition;
+                    Vector position = new Vector(x, y);
+                    Vector displacement = new Vector(0, 0);
+                    double weightSum = 0.0f;
 
                     for (int markerIdx = 0; markerIdx < markers.Length; ++markerIdx)
                     {
-                        Vector toStart = ownPosition - markers[markerIdx].target_start;
+                        Vector toStart = position - markers[markerIdx].target_start;
    
                         // calc relative coordinates to line
                         double u = toStart.Dot(markers[markerIdx].target_dirNorm);
@@ -98,12 +102,15 @@ namespace MorphingTool
                         else // beside
                             weight = v * v;
                         weight = Math.Exp(-weight / LINE_WEIGHT); //Math.Pow(markers[markerIdx].target_lineLength / (A + weight), B);
+                        weightSum += weight;
 
                         // translation
                         Vector srcPoint = markers[markerIdx].dest_start + u * markers[markerIdx].dest_dirNorm + v * markers[markerIdx].dest_perpendicNorm;
-                        position += (ownPosition - srcPoint) * weight;
+                        displacement += (srcPoint - position) * weight;
                     }
-                    
+
+                    displacement /= weightSum;
+                    position += displacement;
                     position = position.ClampToImageArea();
 
                     *outputDataPixel = inputImage.Sample(position.X, position.Y);

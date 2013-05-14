@@ -61,15 +61,15 @@ namespace MorphingTool
                     Vector displacement = new Vector(0,0);
                     
                     // fixed ptr won't work inside loop! // for(WarpMarker* pMarker = pMarkerFirst; pMarker != pMarkerEnd; ++pMarker)
-                    double influenceSum = 0.0f;
+                    double weightSum = 0.0f;
                     foreach (var marker in markers)
                     {
                         double distSq = (position - marker.CurrentPos).LengthSquared;
-                        double influence = Math.Exp(-distSq / POINT_WEIGHT);//1.0f / (1.0f + distSq / POINT_WEIGHT);        // inverse quadratic!
-                        displacement += marker.MoveVec * influence;
-                        influenceSum += influence;
+                        double weight = Math.Exp(-distSq / POINT_WEIGHT);//1.0f / (1.0f + distSq / POINT_WEIGHT);        // inverse quadratic!
+                        weightSum += weight;
+                        displacement += marker.MoveVec * weight;
                     }
-                    displacement /= influenceSum;
+                    displacement /= weightSum;
                     position += displacement;
                     position = position.ClampToImageArea();
 
