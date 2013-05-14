@@ -5,7 +5,7 @@
         Title="MainWindow" Height="602.4" Width="1024" SizeChanged="Window_SizeChanged" MinWidth="400" MinHeight="300">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="booleanToVisibility" />
-    </Window.Resources> 
+    </Window.Resources>
     <Grid Margin="0,0,0,-4">
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -51,7 +51,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="Animation" Margin="10,227,10,0" Height="113" VerticalAlignment="Top">
+        <GroupBox Header="Animation" Margin="10,227,10,0" Height="143" VerticalAlignment="Top">
             <Grid Margin="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="103*"/>
@@ -64,7 +64,7 @@
                                   Maximum="99999"
                                   Minimum="2"
                                   ParsingNumberStyle="Integer"
-                                  DefaultValue="120" Text="120"
+                                  DefaultValue="80" Text="80"
                                   VerticalAlignment="Top" Grid.Column="1" ValueChanged="NumberOfFrames_ValueChanged" Height="20"/>
                 <Label Content="Num frames:" VerticalAlignment="Top" Height="26"/>
                 <Button Name="AutoAnimationStartButton" Content="Play" VerticalAlignment="Top" Click="PlayButton_Click" Grid.Column="1" Margin="0,57,0,0" Height="20"/>
@@ -78,6 +78,7 @@
                 	ParsingNumberStyle="Number"
                 	Value="2" VerticalAlignment="Top" ValueChanged="NumberOfFrames_ValueChanged" Grid.Column="1" FormatString="F2" RenderTransformOrigin="0.49,-1" Height="20"/>
                 <Label Content="Duration (s):" VerticalAlignment="Top" Margin="0,25,0,0" Height="26"/>
+                <Button x:Name="RenderVideo" Content="Render Video" VerticalAlignment="Top" Click="RenderVideo_Click" Margin="0,82,0,0" Height="28" Grid.ColumnSpan="2"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="Output-View" Margin="10,129,10,0" Height="93" VerticalAlignment="Top">

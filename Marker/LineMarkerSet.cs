@@ -55,7 +55,6 @@ namespace MorphingTool
                 return;
             }
 
-
             // add new
             _dragBoth = true;
             _dragedEndPoint = _markerList.Count;

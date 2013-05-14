@@ -7,6 +7,12 @@ using System.Windows;
 
 namespace MorphingTool
 {
+    /// <summary>
+    /// Warping using field lines
+    /// Sources:
+    /// http://blog.polysfactory.com/2012/01/image-morphing.html
+    /// http://www.cg.tuwien.ac.at/studentwork/VRSem96/Morphing/
+    /// </summary>
     public class FieldWarping : WarpingAlgorithm
     {
         struct WarpMarker
