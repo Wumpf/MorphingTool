@@ -59,10 +59,10 @@ namespace MorphingTool
             _markerList.Add(newMarker);
         }
 
-        public override void OnMouseMove(MarkerSet.Location clickLocation, Vector imageCor, Vector imageSizePixel)
+        public override bool OnMouseMove(MarkerSet.Location clickLocation, Vector imageCor, Vector imageSizePixel)
         {
             if (clickLocation == Location.NONE)
-                return;
+                return false;
 
             _hoveredMarker = MarkerHitTest(clickLocation, imageCor, imageSizePixel);
 
@@ -70,7 +70,9 @@ namespace MorphingTool
             {
                 ((PointMarker)_markerList[_selectedMarker])[clickLocation] = imageCor;
                 _markerList[_selectedMarker].UpdateInterpolatedMarker(_lastInterpolationFactor);
+                return true;
             }
+            return false;
         }
 
         public override void OnLeftMouseButtonUp()

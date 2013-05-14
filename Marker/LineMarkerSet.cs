@@ -96,7 +96,7 @@ namespace MorphingTool
             _dragedEndPoint = -1;
         }
 
-        public override void OnMouseMove(MarkerSet.Location clickLocation, Vector imageCor, Vector imageSizePixel)
+        public override bool OnMouseMove(MarkerSet.Location clickLocation, Vector imageCor, Vector imageSizePixel)
         {
             if (_dragedStartPoint >= 0)
             {
@@ -110,6 +110,7 @@ namespace MorphingTool
                         marker.Start = imageCor;
                 }
                 _markerList[_dragedStartPoint].UpdateInterpolatedMarker(_lastInterpolationFactor);
+                return true;
             }
             else if (_dragedEndPoint >= 0)
             {
@@ -123,6 +124,7 @@ namespace MorphingTool
                         marker.End = imageCor;
                 }
                 _markerList[_dragedEndPoint].UpdateInterpolatedMarker(_lastInterpolationFactor);
+                return true;
             }
             else
             {
@@ -131,6 +133,7 @@ namespace MorphingTool
                     _hoveredStartPoint = PointHitTest(Lines.Select(x => x[clickLocation].Start), imageCor, imageSizePixel);
                 else
                     _hoveredStartPoint = -1;
+                return false;
             }
         }
 

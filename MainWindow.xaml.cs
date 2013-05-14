@@ -136,15 +136,33 @@ namespace MorphingTool
         {
             if (_morphingAlgorithm.MarkerSet != null)
             {
-                _morphingAlgorithm.MarkerSet.UpdateMarkerCanvas(MarkerSet.Location.START_IMAGE, StartImageMarkerCanvas, 
-                                                                new Vector((StartImageMarkerCanvas.ActualWidth - StartImage.ActualWidth) / 2, (StartImageMarkerCanvas.ActualHeight - StartImage.ActualHeight) / 2), 
+                UpdateMarkerCanvases(MarkerSet.Location.START_IMAGE);
+                UpdateMarkerCanvases(MarkerSet.Location.END_IMAGE);
+                UpdateMarkerCanvases(MarkerSet.Location.OUTPUT_IMAGE);
+            }
+        }
+        private void UpdateMarkerCanvases(MarkerSet.Location location)
+        {
+            if (_morphingAlgorithm.MarkerSet != null)
+            {
+                switch(location)
+                {
+                case MarkerSet.Location.START_IMAGE:
+                    _morphingAlgorithm.MarkerSet.UpdateMarkerCanvas(MarkerSet.Location.START_IMAGE, StartImageMarkerCanvas,
+                                                                new Vector((StartImageMarkerCanvas.ActualWidth - StartImage.ActualWidth) / 2, (StartImageMarkerCanvas.ActualHeight - StartImage.ActualHeight) / 2),
                                                                 new Vector(StartImage.ActualWidth, StartImage.ActualHeight));
-                _morphingAlgorithm.MarkerSet.UpdateMarkerCanvas(MarkerSet.Location.END_IMAGE, EndImageMarkerCanvas, 
-                                                                new Vector((EndImageMarkerCanvas.ActualWidth - EndImage.ActualWidth) / 2, (EndImageMarkerCanvas.ActualHeight - EndImage.ActualHeight) / 2), 
+                    break;
+                case MarkerSet.Location.END_IMAGE:
+                    _morphingAlgorithm.MarkerSet.UpdateMarkerCanvas(MarkerSet.Location.END_IMAGE, EndImageMarkerCanvas,
+                                                                new Vector((EndImageMarkerCanvas.ActualWidth - EndImage.ActualWidth) / 2, (EndImageMarkerCanvas.ActualHeight - EndImage.ActualHeight) / 2),
                                                                 new Vector(EndImage.ActualWidth, EndImage.ActualHeight));
-                _morphingAlgorithm.MarkerSet.UpdateMarkerCanvas(MarkerSet.Location.OUTPUT_IMAGE, OutputImageMarkerCanvas, 
-                                                                new Vector((OutputImageMarkerCanvas.ActualWidth - OutputImage.ActualWidth) / 2, (OutputImageMarkerCanvas.ActualHeight - OutputImage.ActualHeight) / 2), 
+                    break;
+                case MarkerSet.Location.OUTPUT_IMAGE:
+                    _morphingAlgorithm.MarkerSet.UpdateMarkerCanvas(MarkerSet.Location.OUTPUT_IMAGE, OutputImageMarkerCanvas,
+                                                                new Vector((OutputImageMarkerCanvas.ActualWidth - OutputImage.ActualWidth) / 2, (OutputImageMarkerCanvas.ActualHeight - OutputImage.ActualHeight) / 2),
                                                                 new Vector(OutputImage.ActualWidth, OutputImage.ActualHeight));
+                    break;
+                }
             }
         }
 
@@ -176,10 +194,12 @@ namespace MorphingTool
         private void Image_MouseMove(object sender, MouseEventArgs e)
         {
             MarkerSet.Location location = sender == StartImage ? MarkerSet.Location.START_IMAGE : MarkerSet.Location.END_IMAGE;
-            _morphingAlgorithm.MarkerSet.OnMouseMove(location, ComputeRelativeImagePositionFromMouseEvent(sender, e),
+            bool changedMarker = _morphingAlgorithm.MarkerSet.OnMouseMove(location, ComputeRelativeImagePositionFromMouseEvent(sender, e),
                                                         new Vector(((Image)sender).ActualWidth, ((Image)sender).ActualHeight));
-            if (!_animationPlayer.IsEnabled) 
+            if (!_animationPlayer.IsEnabled && changedMarker)
                 UpdateOutputImageContent();
+            else
+                UpdateMarkerCanvases(location);
         }
       
         private void Image_MarkerDeselect(object sender, MouseEventArgs e)

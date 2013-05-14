@@ -116,12 +116,13 @@ namespace MorphingTool
         public abstract void OnRightMouseButtonDown(Location clickLocation, Vector imageCor, Vector imageSizePixel);
 
         /// <summary>
-        /// Performs action for right mouse click on one of the 3 image areas. Moves a marker or applies hovering effects.
+        /// Performs action for mouse movements on one of the 3 image areas. Moves a marker or applies hovering effects.
         /// </summary>
         /// <param name="clickLocation">Clicked image type.</param>
         /// <param name="imageCor">Relative coordinates on the given image.</param>
         /// <param name="imageSizePixel">Size of the clicked image in pixel</param>
-        public abstract void OnMouseMove(Location clickLocation, Vector imageCor, Vector imageSizePixel);
+        /// <returns>true if any marker has changed its position</returns>
+        public abstract bool OnMouseMove(Location clickLocation, Vector imageCor, Vector imageSizePixel);
 
         /// <summary>
         /// Updates the coordinates/representation of the interpolated marker
