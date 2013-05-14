@@ -200,5 +200,17 @@ namespace MorphingTool
             if(comboBox != null)
                 _morphingAlgorithm.AlgorithmType = (Morphing.Algorithm)comboBox.SelectedIndex;
         }
+
+        private void DissolverSettingChanged(object sender, RoutedEventArgs e)
+        {
+            if((bool)DissolverSetting_Combined.IsChecked)
+                _morphingAlgorithm.DissolverType = Morphing.Dissolver.ALPHABLEND;
+            else if ((bool)DissolverSetting_StartOnly.IsChecked)
+                _morphingAlgorithm.DissolverType = Morphing.Dissolver.SELECT_START;
+            else if ((bool)DissolverSetting_EndOnly.IsChecked)
+                _morphingAlgorithm.DissolverType = Morphing.Dissolver.SELECT_END;
+
+            UpdateOutputImageContent();
+        }
     }
 }

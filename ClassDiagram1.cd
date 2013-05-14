@@ -1,37 +1,58 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="MorphingTool.App" Collapsed="true">
-    <Position X="0.5" Y="0.5" Width="1.5" />
+    <Position X="7" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>App.xaml.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="MorphingTool.MainWindow" Collapsed="true">
-    <Position X="4.25" Y="0.5" Width="1.5" />
+  <Class Name="MorphingTool.AlphaBlendDissolver" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="3" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIgACAAAAAAAAAQAAAAAAAAAEAACAABAAAAAIEAAAA=</HashCode>
+      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CrossDissolver\AlphaBlendDissolver.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MorphingTool.ImageUtilities" Collapsed="true">
+    <Position X="10.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>ImageUtilities.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MorphingTool.MainWindow" Collapsed="true">
+    <Position X="5.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAIgACDAAQABAAAQAIACAIAAAEAECAABAAAgAIEICAA=</HashCode>
       <FileName>MainWindow.xaml.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="MorphingTool.Properties.Resources" Collapsed="true">
-    <Position X="0.5" Y="1.5" Width="1.5" />
+  <Class Name="MorphingTool.LineMarkerSet" Collapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAABEAAAAQAAAAAAAAAAAAAAAIA=</HashCode>
+      <HashCode>ABAAAAgAAAAABACAAgAEACIAABAAAAACABAAAAAAAAA=</HashCode>
+      <FileName>Marker\LineMarkerSet.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="MorphingTool.Properties.Settings" Collapsed="true">
-    <Position X="2.25" Y="0.5" Width="1.5" />
+  <Class Name="MorphingTool.MarkerSet" Collapsed="true">
+    <Position X="1.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>IQABIAAAAAAABACAAAAAACIAABAAEAAAABAAAAAAAAA=</HashCode>
+      <FileName>Marker\MarkerSet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MorphingTool.PointMarkerSet" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAhBCAAAAAACAAABAAAABAABAAAAAAAAA=</HashCode>
+      <FileName>Marker\PointMarkerSet.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MorphingTool.Morphing">
-    <Position X="7.25" Y="0.75" Width="3.25" />
+    <Position X="7.5" Y="1.25" Width="3" />
     <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Properties" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
@@ -40,11 +61,6 @@
           <NewMemberFileName>Morphing.cs</NewMemberFileName>
         </TypeIdentifier>
       </Enum>
-      <Struct Name="MorphingTool.Color" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Morphing.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Struct>
       <Class Name="MorphingTool.Morphing.ImageData" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>Morphing.cs</NewMemberFileName>
@@ -53,52 +69,64 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAAAEAAAAEAAARBAAAAAEAAAgAgAAAIAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAEAAAAEAAARBAAEAAEEAAgAgAgAIAAAABAAAAA=</HashCode>
       <FileName>Morphing.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="MorphingTool.MarkerSet">
-    <Position X="3.5" Y="3.25" Width="1.5" />
+  <Class Name="MorphingTool.VectorExtension">
+    <Position X="12.25" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>MarkerSet.cs</FileName>
+      <HashCode>AAAAAAQAAAAIAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>VectorExtension.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="MorphingTool.VectorMarkerSet">
-    <Position X="1.75" Y="4.75" Width="1.5" />
+  <Class Name="MorphingTool.FieldWarping" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="12.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>VectorMarkerSet.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Warping\FieldWarping.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MorphingTool.RadialFunctionsWarping" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="10.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAEABAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Warping\RadialFunctionsWarping.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MorphingTool.Properties.Resources" Collapsed="true">
+    <Position X="10.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABEAAAAQAAAAAAAAAAAAAAAIA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="MorphingTool.AlphaBlendDissolver">
-    <Position X="11.75" Y="6.75" Width="1.5" />
+  <Class Name="MorphingTool.Properties.Settings" Collapsed="true">
+    <Position X="5.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="MorphingTool.Color" Collapsed="true">
+    <Position X="5.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAKAEAAQA=</HashCode>
+      <FileName>Color.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Interface Name="MorphingTool.CrossDissolver" Collapsed="true">
+    <Position X="1.5" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>AlphaBlendDissolver.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="MorphingTool.RadialFunctionsWarping">
-    <Position X="4" Y="6.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>RadialFunctionsWarping.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Interface Name="MorphingTool.CrossDissolver">
-    <Position X="11.75" Y="5.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>CrossDissolver.cs</FileName>
+      <FileName>CrossDissolver\CrossDissolver.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="MorphingTool.WarpingAlgorithm">
-    <Position X="4" Y="5.5" Width="1.5" />
+  <Interface Name="MorphingTool.WarpingAlgorithm" Collapsed="true">
+    <Position X="4.75" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>WarpingAlgorithm.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Warping\WarpingAlgorithm.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />

@@ -24,6 +24,17 @@ namespace MorphingTool
             };
         }
 
+        public static double Dot(this Vector a, Vector b)
+        {
+            return a.X * b.X + a.Y * b.Y;
+        }
+
+        public static Vector Perpendicular(this Vector a)
+        {
+            return new Vector(a.Y, -a.X);
+        }
+
+
         /// <summary>
         /// Checks weather a Vector is within a rectangle or not
         /// </summary>

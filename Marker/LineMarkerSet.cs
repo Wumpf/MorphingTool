@@ -43,6 +43,8 @@ namespace MorphingTool
         private int _hoveredEndPoint = -1;
         private bool _dragBoth = false;
 
+        private const float MIN_LINE_LENGTH = 0.05f;
+
         public override void OnLeftMouseButtonDown(MarkerSet.MouseLocation clickLocation, Vector imageCor, Vector imageSizePixel)
         {
             // selection?
@@ -59,8 +61,8 @@ namespace MorphingTool
             _dragedEndPoint = _markerList.Count;
             LineMarker newLine = new LineMarker()
             {
-                StartMarker = new Line() { Start = imageCor, End = imageCor },
-                EndMarker = new Line() { Start = imageCor, End = imageCor },
+                StartMarker = new Line() { Start = imageCor, End = imageCor + new Vector(MIN_LINE_LENGTH, 0.0) },
+                EndMarker = new Line() { Start = imageCor, End = imageCor + new Vector(MIN_LINE_LENGTH, 0.0) },
                 InterpolatedMarker = new Line() { Start = imageCor, End = imageCor }
             };
             _markerList.Add(newLine);
@@ -98,16 +100,28 @@ namespace MorphingTool
         {
             if (_dragedStartPoint >= 0)
             {
-                ((LineMarker)_markerList[_dragedStartPoint])[clickLocation].Start = imageCor;
-                if(_dragBoth)
-                    ((LineMarker)_markerList[_dragedStartPoint])[clickLocation == MouseLocation.START_IMAGE ? MouseLocation.END_IMAGE : MouseLocation.START_IMAGE].Start = imageCor;
+                var marker = ((LineMarker)_markerList[_dragedStartPoint])[clickLocation];
+                if((marker.End - imageCor).Length > MIN_LINE_LENGTH)
+                    marker.Start = imageCor;
+                if (_dragBoth)
+                {
+                    marker = ((LineMarker)_markerList[_dragedStartPoint])[clickLocation == MouseLocation.START_IMAGE ? MouseLocation.END_IMAGE : MouseLocation.START_IMAGE];
+                    if ((marker.End - imageCor).Length > MIN_LINE_LENGTH)
+                        marker.Start = imageCor;
+                }
                 _markerList[_dragedStartPoint].UpdateInterpolatedMarker(_lastInterpolationFactor);
             }
             else if (_dragedEndPoint >= 0)
             {
-                ((LineMarker)_markerList[_dragedEndPoint])[clickLocation].End = imageCor;
+                var marker = ((LineMarker)_markerList[_dragedEndPoint])[clickLocation];
+                if ((marker.Start - imageCor).Length > MIN_LINE_LENGTH)
+                    marker.End = imageCor;
                 if (_dragBoth)
-                    ((LineMarker)_markerList[_dragedEndPoint])[clickLocation == MouseLocation.START_IMAGE ? MouseLocation.END_IMAGE : MouseLocation.START_IMAGE].End = imageCor;
+                {
+                    marker = ((LineMarker)_markerList[_dragedEndPoint])[clickLocation == MouseLocation.START_IMAGE ? MouseLocation.END_IMAGE : MouseLocation.START_IMAGE];
+                    if ((marker.Start - imageCor).Length > MIN_LINE_LENGTH)
+                        marker.End = imageCor;
+                }
                 _markerList[_dragedEndPoint].UpdateInterpolatedMarker(_lastInterpolationFactor);
             }
             else

@@ -46,6 +46,9 @@ namespace MorphingTool
             }
             double xStep = 1.0 / outputImage.Width;
 
+            if (markers.Length == 0)
+                return;
+
             Parallel.For(0, outputImage.Height, yi =>
             {
                 Color* outputDataPixel = outputImage.Data + yi * outputImage.Width;
@@ -54,16 +57,20 @@ namespace MorphingTool
 
                 for (double x = 0; outputDataPixel != lastOutputDataPixel; x += xStep, ++outputDataPixel)
                 {
-                    Vector ownPosition = new Vector(x, y);
-                    Vector position = ownPosition;
+                    Vector position = new Vector(x, y);
+                    Vector displacement = new Vector(0,0);
                     
                     // fixed ptr won't work inside loop! // for(WarpMarker* pMarker = pMarkerFirst; pMarker != pMarkerEnd; ++pMarker)
+                    double influenceSum = 0.0f;
                     foreach (var marker in markers)
                     {
-                        double distSq = (ownPosition - marker.CurrentPos).LengthSquared;
+                        double distSq = (position - marker.CurrentPos).LengthSquared;
                         double influence = Math.Exp(-distSq / POINT_WEIGHT);//1.0f / (1.0f + distSq / POINT_WEIGHT);        // inverse quadratic!
-                        position += marker.MoveVec * influence;
+                        displacement += marker.MoveVec * influence;
+                        influenceSum += influence;
                     }
+                    displacement /= influenceSum;
+                    position += displacement;
                     position = position.ClampToImageArea();
 
                     *outputDataPixel = inputImage.Sample(position.X, position.Y);

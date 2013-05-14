@@ -48,7 +48,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="Animation" Margin="10,252,10,0" Height="113" VerticalAlignment="Top">
+        <GroupBox Header="Animation" Margin="10,370,10,0" Height="113" VerticalAlignment="Top">
             <Grid Margin="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="103*"/>
@@ -75,6 +75,14 @@
                 	ParsingNumberStyle="Number"
                 	Value="2" VerticalAlignment="Top" ValueChanged="NumberOfFrames_ValueChanged" Grid.Column="1" FormatString="F2" RenderTransformOrigin="0.49,-1" Height="20"/>
                 <Label Content="Duration (s):" VerticalAlignment="Top" Margin="0,25,0,0" Height="26"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="View" Margin="10,252,10,0" Height="113" VerticalAlignment="Top">
+            <Grid Margin="5">
+                <RadioButton Content="combined" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="DissolverSetting" IsChecked="True" Name="DissolverSetting_Combined" Checked="DissolverSettingChanged"/>
+                <RadioButton Content="only start" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,20,0,0" GroupName="DissolverSetting" Name="DissolverSetting_StartOnly" Checked="DissolverSettingChanged"/>
+                <RadioButton Content="only end" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,40,0,0" GroupName="DissolverSetting" Name="DissolverSetting_EndOnly" Checked="DissolverSettingChanged"/>
+
             </Grid>
         </GroupBox>
     </Grid>

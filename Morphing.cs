@@ -12,6 +12,8 @@ namespace MorphingTool
     /// </summary>
     public class Morphing
     {
+        #region Warping
+
         /// <summary>
         /// possible morphing algorithms
         /// </summary>
@@ -22,6 +24,36 @@ namespace MorphingTool
             MESH_BASED,
 
             NONE
+        }
+
+        /// <summary>
+        /// Active type of algorithm used for morphing.
+        /// Changing will reset all marker settings
+        /// </summary>
+        public Algorithm AlgorithmType
+        {
+            get { return _currentAlgorithmType; }
+            set
+            {
+                if (value != _currentAlgorithmType)
+                {
+                    switch (value)
+                    {
+                        case Algorithm.RADIAL_FUNCTIONS:
+                            _markerSet = new PointMarkerSet();
+                            _warpingAlgorithm = new RadialFunctionsWarping();
+                            break;
+                        case Algorithm.FEATURE_BASED:
+                            _markerSet = new LineMarkerSet();
+                            _warpingAlgorithm = new FieldWarping();
+                            break;
+                        default:
+                            throw new Exception("Unknown morphing algorithm!");
+                    }
+                    _currentAlgorithmType = value;
+                }
+
+            }
         }
 
         /// <summary>
@@ -39,14 +71,66 @@ namespace MorphingTool
         private Algorithm _currentAlgorithmType = Algorithm.NONE;
 
         /// <summary>
+        /// Algorithm for image warping.
+        /// </summary>
+        private WarpingAlgorithm _warpingAlgorithm;
+
+        #endregion
+
+        #region Dissolving
+
+        /// <summary>
+        /// possible dissolver
+        /// </summary>
+        public enum Dissolver
+        {
+            ALPHABLEND,
+            SELECT_START,
+            SELECT_END
+        }
+
+        /// <summary>
+        /// Active type of algorithm used for morphing.
+        /// Changing will reset all marker settings
+        /// </summary>
+        public Dissolver DissolverType
+        {
+            get { return _currentDissolverType; }
+            set
+            {
+                if (value != _currentDissolverType)
+                {
+                    switch (value)
+                    {
+                        case Dissolver.ALPHABLEND:
+                            _crossDissolver = new AlphaBlendDissolver();
+                            break;
+                        case Dissolver.SELECT_START:
+                            _crossDissolver = new SelectionDissolver() { UseStartImage = true};
+                            break;
+                        case Dissolver.SELECT_END:
+                            _crossDissolver = new SelectionDissolver() { UseStartImage = false };
+                            break;
+                        default:
+                            throw new Exception("Unknown dissolver type!");
+                    }
+                    _currentDissolverType = value;
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// currently used algorithm type
+        /// </summary>
+        private Dissolver _currentDissolverType = Dissolver.ALPHABLEND;
+
+        /// <summary>
         /// Algorithm that dissolves two warped Images
         /// </summary>
         private CrossDissolver _crossDissolver = new AlphaBlendDissolver();
 
-        /// <summary>
-        /// Algorithm for image warping.
-        /// </summary>
-        private WarpingAlgorithm _warpingAlgorithm = new RadialFunctionsWarping();
+        #endregion
 
         /// <summary>
         /// Intern representation of Image Data.
@@ -143,36 +227,6 @@ namespace MorphingTool
         /// Warped inbetween image in an intern intermediate representation.
         /// </summary>
         private ImageData _endImageWarped;
-
-        /// <summary>
-        /// Active type of algorithm used for morphing.
-        /// Changing will reset all marker settings
-        /// </summary>
-        public Algorithm AlgorithmType
-        {
-            get { return _currentAlgorithmType; }
-            set
-            {
-                if (value != _currentAlgorithmType)
-                {
-                    switch (value)
-                    {
-                        case Algorithm.RADIAL_FUNCTIONS:
-                            _markerSet = new PointMarkerSet();
-                            _warpingAlgorithm = new RadialFunctionsWarping();
-                            break;
-                        case Algorithm.FEATURE_BASED:
-                            _markerSet = new LineMarkerSet();
-                            _warpingAlgorithm = new FieldWarping();
-                            break;
-                        default:
-                            throw new Exception("Unknown morphing algorithm!");
-                    }
-                    _currentAlgorithmType = value;
-                }
-                
-            }
-        }
 
         /// <summary>
         /// Initializes an instance for morphing images
