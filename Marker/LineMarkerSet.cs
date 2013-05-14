@@ -147,43 +147,27 @@ namespace MorphingTool
             {
                 LineMarker marker = (LineMarker)_markerList[markerIdx];
 
-                PathGeometry pathGeometry = new PathGeometry();
-                pathGeometry.FillRule = FillRule.Nonzero;
-                PathFigure pathFigure = new PathFigure();
-                pathFigure.StartPoint = new Point(marker[location].Start.X * imageSizePixel.X + imageOffsetPixel.X,
-                                                    marker[location].Start.Y * imageSizePixel.Y + imageOffsetPixel.Y);
-                pathFigure.IsClosed = true;
-                pathGeometry.Figures.Add(pathFigure);
-                LineSegment lineSegment1 = new LineSegment();
-                lineSegment1.Point = new Point(marker[location].End.X * imageSizePixel.X + imageOffsetPixel.X,
-                                                marker[location].End.Y * imageSizePixel.Y + imageOffsetPixel.Y);
-                pathFigure.Segments.Add(lineSegment1);
-
-                Path arrow = new Path();
+                var arrow = new Tomers.WPF.Shapes.ArrowShape();
+                arrow.HeadHeight = MarkerSet.MARKER_RENDER_SIZE / 2;
+                arrow.HeadWidth = MarkerSet.MARKER_RENDER_SIZE;
                 arrow.Stretch = Stretch.Fill;
-                arrow.StrokeLineJoin = PenLineJoin.Round;
                 if (markerIdx == _dragedEndPoint || markerIdx == _dragedStartPoint)
-                {
                     arrow.Stroke = new SolidColorBrush(Colors.Red);
-                    arrow.Fill = new SolidColorBrush(Colors.Wheat);
-                }
                 else if (markerIdx == _hoveredStartPoint || markerIdx == _hoveredEndPoint)
-                {
                     arrow.Stroke = new SolidColorBrush(Colors.DarkRed);
-                    arrow.Fill = new SolidColorBrush(Colors.Wheat);
-                }
                 else
-                {
                     arrow.Stroke = new SolidColorBrush(Colors.Black);
-                    arrow.Fill = new SolidColorBrush(Colors.White);
-                }
                 arrow.StrokeThickness = 2;
-                arrow.Data = pathGeometry;
+                arrow.X1 = marker[location].Start.X * imageSizePixel.X + imageOffsetPixel.X;
+                arrow.X2 = marker[location].End.X * imageSizePixel.X + imageOffsetPixel.X;
+                arrow.Y1 = marker[location].Start.Y * imageSizePixel.Y + imageOffsetPixel.Y;
+                arrow.Y2 = marker[location].End.Y * imageSizePixel.Y + imageOffsetPixel.Y;
 
-                Canvas.SetLeft(arrow, Math.Min(marker[location].Start.X, marker[location].End.X) * imageSizePixel.X + imageOffsetPixel.X);
-                Canvas.SetTop(arrow, Math.Min(marker[location].Start.Y, marker[location].End.Y) * imageSizePixel.Y + imageOffsetPixel.Y);
-                Canvas.SetRight(arrow, Math.Max(marker[location].Start.X, marker[location].End.X) * imageSizePixel.X + imageOffsetPixel.X);
-                Canvas.SetBottom(arrow, Math.Max(marker[location].Start.Y, marker[location].End.Y) * imageSizePixel.Y + imageOffsetPixel.Y);
+                
+                Canvas.SetLeft(arrow, Math.Min(arrow.X1, arrow.X2));
+                Canvas.SetTop(arrow, Math.Min(arrow.Y1, arrow.Y2));
+                Canvas.SetRight(arrow, Math.Max(arrow.X1, arrow.X2));
+                Canvas.SetBottom(arrow, Math.Max(arrow.Y2, arrow.Y2));
 
                 imageCanvas.Children.Add(arrow);
             }

@@ -58,6 +58,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ArrowShape.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="CrossDissolver\SelectionDissolver.cs" />
     <Compile Include="MainWindow_Animation.cs" />
