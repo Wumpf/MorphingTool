@@ -47,6 +47,10 @@ namespace MorphingTool
                             _markerSet = new LineMarkerSet();
                             _warpingAlgorithm = new FieldWarping();
                             break;
+                        case Algorithm.MESH_BASED:
+                            _markerSet = new TriangleMarkerSet();
+                            _warpingAlgorithm = new MeshWarping();
+                            break;
                         default:
                             throw new Exception("Unknown morphing algorithm!");
                     }
@@ -132,6 +136,8 @@ namespace MorphingTool
 
         #endregion
 
+        #region Image Buffer
+
         /// <summary>
         /// Intern representation of Image Data.
         /// </summary>
@@ -187,7 +193,7 @@ namespace MorphingTool
                 int coordFloorX = (int)(pixCoordX +0.5f);
                 int coordFloorY = (int)(pixCoordY + 0.5f);
                 return Data[coordFloorX + coordFloorY * Width];*/
-            
+
                 // linear sampling
                 double pixCoordX = x * widthSub1;
                 double pixCoordY = y * heightSub1;
@@ -208,7 +214,7 @@ namespace MorphingTool
 
                 return Color.Lerp(Color.Lerp(*upperLeft, *upperRight, fracX),
                                   Color.Lerp(*lowerLeft, *lowerRight, fracX), fracY);
-            } 
+            }
         };
 
         /// <summary>
@@ -227,6 +233,8 @@ namespace MorphingTool
         /// Warped inbetween image in an intern intermediate representation.
         /// </summary>
         private ImageData _endImageWarped;
+
+        #endregion
 
         /// <summary>
         /// Initializes an instance for morphing images

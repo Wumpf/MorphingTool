@@ -46,6 +46,7 @@
                 <ComboBox x:Name="MorphingTechniqueSelector" VerticalAlignment="Top" Grid.Column="1" SelectedIndex="0" Height="22" SelectionChanged="MorphingTechniqueSelector_SelectionChanged">
                     <ComboBoxItem Content="Radial Functions"/>
                     <ComboBoxItem Content="Field Morphing"/>
+                    <ComboBoxItem Content="Mesh Morphing"/>
                 </ComboBox>
                 <Label Content="Technique:" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="67"/>
             </Grid>
