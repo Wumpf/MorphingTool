@@ -1,0 +1,5 @@
+/MorphingTool/bin/Debug/temp/*.bmp
+/MorphingTool/temp/*.jpg
+/bin/
+/obj/
+/*.suo
