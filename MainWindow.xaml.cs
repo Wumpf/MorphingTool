@@ -219,8 +219,11 @@ namespace MorphingTool
         private void MorphingTechniqueSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
-            if(comboBox != null)
+            if (comboBox != null)
+            {
                 _morphingAlgorithm.AlgorithmType = (Morphing.Algorithm)comboBox.SelectedIndex;
+                UpdateMarkerCanvases();
+            }
         }
 
         private void DissolverSettingChanged(object sender, RoutedEventArgs e)

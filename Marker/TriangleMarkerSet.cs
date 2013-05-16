@@ -11,33 +11,36 @@ namespace MorphingTool
 {
     class TriangleMarkerSet : MarkerSet
     {
-        public class Vertex : Marker<Vector>
+        /// <summary>
+        /// A Triangle vertex
+        /// </summary>
+        public class Vertex : Marker<Vector>, MIConvexHull.IVertex
         {
             public override void UpdateInterpolatedMarker(float interp)
             {
                 InterpolatedMarker = StartMarker.Lerp(EndMarker, interp);
-                TriangulationPosition = StartMarker.Lerp(EndMarker, 0.5f);
+                Vector pos = StartMarker.Lerp(EndMarker, 0.5f);
+                _triangulationPosition[0] = pos.X;
+                _triangulationPosition[1] = pos.Y;
             }
 
             /// <summary>
             /// position used for triangulation
             /// </summary>
-            public Vector TriangulationPosition;
+            public double[] _triangulationPosition = new double[2];
 
             /// <summary>
-            /// triangles that use this vertex
+            /// position method for MIConvexHull.IVertex
             /// </summary>
-            public List<Triangle> AssociatedTriangles = new List<Triangle>();
+            public double[] Position
+            {
+                get { return _triangulationPosition; }
+                set { _triangulationPosition = value; }
+            }
         };
 
-        public class Triangle
-        {
-            public Vertex vertexA;
-            public Vertex vertexB;
-            public Vertex vertexC;
-        }
 
-        private List<Triangle> _triangles = new List<Triangle>();
+        private IEnumerable<MIConvexHull.DefaultTriangulationCell<Vertex>> _triangles = new List<MIConvexHull.DefaultTriangulationCell<Vertex>>();
 
         public IEnumerable<Vertex> Points
         { get { return _markerList.Cast<Vertex>(); } }
@@ -54,17 +57,11 @@ namespace MorphingTool
             _markerList.Add(new Vertex() { StartMarker = new Vector(1, 1), EndMarker = new Vector(1, 1) });
             _markerList.Add(new Vertex() { StartMarker = new Vector(0, 1), EndMarker = new Vector(0, 1) });
 
-            _triangles.Add(new Triangle() { vertexA = (Vertex)_markerList[0], vertexB = (Vertex)_markerList[1], vertexC = (Vertex)_markerList[3] });
-            _triangles.Add(new Triangle() { vertexA = (Vertex)_markerList[1], vertexB = (Vertex)_markerList[2], vertexC = (Vertex)_markerList[3] });
-
-            foreach (var triangle in _triangles)
-            {
-                triangle.vertexA.AssociatedTriangles.Add(triangle);
-                triangle.vertexB.AssociatedTriangles.Add(triangle);
-                triangle.vertexC.AssociatedTriangles.Add(triangle);
-            }
             foreach (var marker in _markerList)
                 marker.UpdateInterpolatedMarker(0.0f);
+
+            // delauny triangulation!
+            _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Points).Cells;
         }
 
         /// <summary>
@@ -95,10 +92,15 @@ namespace MorphingTool
             {
                 StartMarker = imageCor,
                 EndMarker = imageCor,
-                InterpolatedMarker = imageCor
             };
+            newMarker.UpdateInterpolatedMarker(_lastInterpolationFactor);
+
+            // add marker
             _selectedMarker = _markerList.Count;
             _markerList.Add(newMarker);
+
+            // recompute delauny triangulation!
+            _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Points).Cells;
         }
 
         public override bool OnMouseMove(MarkerSet.Location clickLocation, Vector imageCor, Vector imageSizePixel)
@@ -112,6 +114,10 @@ namespace MorphingTool
             {
                 ((Vertex)_markerList[_selectedMarker])[clickLocation] = imageCor;
                 _markerList[_selectedMarker].UpdateInterpolatedMarker(_lastInterpolationFactor);
+
+                // recompute delauny triangulation!
+                _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Points).Cells;
+
                 return true;
             }
             return false;
@@ -132,6 +138,9 @@ namespace MorphingTool
             {
                 _markerList.RemoveAt(markerIndex);
                 _selectedMarker = -1;
+
+                // recompute delauny triangulation!
+                _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Points).Cells;
             }
         }
 
@@ -141,23 +150,26 @@ namespace MorphingTool
             imageCanvas.Children.Clear();
 
             // triangle lines
-            for (int triangleIndex = 0; triangleIndex < _triangles.Count; ++triangleIndex)
+            foreach(var triangle in _triangles)
             {
-                var triangle = new Polygon();
-                triangle.Points.Add(new Point(_triangles[triangleIndex].vertexA[location].X, _triangles[triangleIndex].vertexA[location].Y));
-                triangle.Points.Add(new Point(_triangles[triangleIndex].vertexB[location].X, _triangles[triangleIndex].vertexB[location].Y));
-                triangle.Points.Add(new Point(_triangles[triangleIndex].vertexC[location].X, _triangles[triangleIndex].vertexC[location].Y));
-                triangle.Fill = Brushes.Transparent;
-                triangle.Width = imageSizePixel.X;
-                triangle.Height = imageSizePixel.Y;
-                triangle.Stretch = Stretch.Fill;
-                triangle.Stroke = Brushes.White;
-                triangle.StrokeThickness = 2;
+                Polygon canvasTriangle = new Polygon();
+                Point posA = new Point(triangle.Vertices[0][location].X * imageSizePixel.X + imageOffsetPixel.X, triangle.Vertices[0][location].Y * imageSizePixel.Y + imageOffsetPixel.Y);
+                Point posB = new Point(triangle.Vertices[1][location].X * imageSizePixel.X + imageOffsetPixel.X, triangle.Vertices[1][location].Y * imageSizePixel.Y + imageOffsetPixel.Y);
+                Point posC = new Point(triangle.Vertices[2][location].X * imageSizePixel.X + imageOffsetPixel.X, triangle.Vertices[2][location].Y * imageSizePixel.Y + imageOffsetPixel.Y);
+                canvasTriangle.Points.Add(posA);
+                canvasTriangle.Points.Add(posB);
+                canvasTriangle.Points.Add(posC);
+                canvasTriangle.Fill = Brushes.Transparent;
+                canvasTriangle.Stretch = Stretch.Fill;
+                canvasTriangle.Stroke = Brushes.White;
+                canvasTriangle.StrokeThickness = 2;
 
-                Canvas.SetLeft(triangle, imageOffsetPixel.X);
-                Canvas.SetTop(triangle, imageOffsetPixel.Y);
+                Canvas.SetLeft(canvasTriangle, Math.Min(Math.Min(posA.X, posB.X), posC.X));
+                Canvas.SetTop(canvasTriangle, Math.Min(Math.Min(posA.Y, posB.Y), posC.Y));
+                Canvas.SetRight(canvasTriangle, Math.Max(Math.Max(posA.X, posB.X), posC.X));
+                Canvas.SetBottom(canvasTriangle, Math.Max(Math.Max(posA.Y, posB.Y), posC.Y));
 
-                imageCanvas.Children.Add(triangle);
+                imageCanvas.Children.Add(canvasTriangle);
             }
 
             AddPointsToCanvases(Points.Select(x => x[location]), _selectedMarker, _hoveredMarker, imageCanvas, imageOffsetPixel, imageSizePixel);
