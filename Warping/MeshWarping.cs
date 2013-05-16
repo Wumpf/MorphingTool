@@ -89,8 +89,7 @@ namespace MorphingTool
                 double y = (double)yi / outputImage.Height;
 
                 double u,v;
-                double dot00, dot01, dot02, dot11, dot12;
-                double invDenom;
+                double dot02, dot12;
                 Vector v2;
 
                 for (double x = 0; outputDataPixel != lastOutputDataPixel; x += xStep, ++outputDataPixel)
