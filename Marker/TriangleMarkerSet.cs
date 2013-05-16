@@ -12,7 +12,7 @@ namespace MorphingTool
     class TriangleMarkerSet : MarkerSet
     {
         /// <summary>
-        /// A Triangle vertex
+        /// A triangle vertex
         /// </summary>
         public class Vertex : Marker<Vector>, MIConvexHull.IVertex
         {
@@ -40,9 +40,12 @@ namespace MorphingTool
         };
 
 
+        public IEnumerable<MIConvexHull.DefaultTriangulationCell<Vertex>> Triangles
+        { get { return _triangles; } }
         private IEnumerable<MIConvexHull.DefaultTriangulationCell<Vertex>> _triangles = new List<MIConvexHull.DefaultTriangulationCell<Vertex>>();
 
-        public IEnumerable<Vertex> Points
+
+        private IEnumerable<Vertex> Vertices
         { get { return _markerList.Cast<Vertex>(); } }
 
         private const int NUM_NONEDITABLE_MARKER = 4;
@@ -61,7 +64,7 @@ namespace MorphingTool
                 marker.UpdateInterpolatedMarker(0.0f);
 
             // delauny triangulation!
-            _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Points).Cells;
+            _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Vertices).Cells;
         }
 
         /// <summary>
@@ -71,9 +74,9 @@ namespace MorphingTool
         private int MarkerHitTest(Location clickLocation, Vector imageCor, Vector imageSizePixel)
         {
             if (clickLocation == Location.START_IMAGE)
-                return PointHitTest(Points.Select(x => x.StartMarker), imageCor, imageSizePixel);
+                return PointHitTest(Vertices.Select(x => x.StartMarker), imageCor, imageSizePixel);
             else if (clickLocation == Location.END_IMAGE)
-                return PointHitTest(Points.Select(x => x.EndMarker), imageCor, imageSizePixel);
+                return PointHitTest(Vertices.Select(x => x.EndMarker), imageCor, imageSizePixel);
             else
                 return -1;
         }
@@ -100,7 +103,7 @@ namespace MorphingTool
             _markerList.Add(newMarker);
 
             // recompute delauny triangulation!
-            _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Points).Cells;
+            _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Vertices).Cells;
         }
 
         public override bool OnMouseMove(MarkerSet.Location clickLocation, Vector imageCor, Vector imageSizePixel)
@@ -116,7 +119,7 @@ namespace MorphingTool
                 _markerList[_selectedMarker].UpdateInterpolatedMarker(_lastInterpolationFactor);
 
                 // recompute delauny triangulation!
-                _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Points).Cells;
+                _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Vertices).Cells;
 
                 return true;
             }
@@ -140,7 +143,7 @@ namespace MorphingTool
                 _selectedMarker = -1;
 
                 // recompute delauny triangulation!
-                _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Points).Cells;
+                _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Vertices).Cells;
             }
         }
 
@@ -172,7 +175,7 @@ namespace MorphingTool
                 imageCanvas.Children.Add(canvasTriangle);
             }
 
-            AddPointsToCanvases(Points.Select(x => x[location]), _selectedMarker, _hoveredMarker, imageCanvas, imageOffsetPixel, imageSizePixel);
+            AddPointsToCanvases(Vertices.Select(x => x[location]), _selectedMarker, _hoveredMarker, imageCanvas, imageOffsetPixel, imageSizePixel);
         }
     }
 }

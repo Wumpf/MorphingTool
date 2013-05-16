@@ -14,79 +14,110 @@ namespace MorphingTool
     {
         const float LINE_WEIGHT = 0.03f;
 
+        struct SourceTriangle
+        {
+            public Vector A;
+            public Vector V0;
+            public Vector V1;
+        };
+
+        struct DestTriangle
+        {
+            public Vector A;
+            public Vector V0;
+            public Vector V1;
+            public double V0DotV0_divDenom;
+            public double V1DotV1_divDenom;
+            public double V0DotV1_divDenom;
+        };
+
         unsafe void WarpingAlgorithm.WarpImage(MarkerSet markerSet, Morphing.ImageData inputImage, Morphing.ImageData outputImage, bool startImage)
         {
             System.Diagnostics.Debug.Assert(markerSet != null && inputImage != null && outputImage != null);
 
-    /*         LineMarkerSet lineMarkerSet = markerSet as LineMarkerSet;
-            System.Diagnostics.Debug.Assert(lineMarkerSet != null);
+            TriangleMarkerSet triangleMarkerSet = markerSet as TriangleMarkerSet;
+            System.Diagnostics.Debug.Assert(triangleMarkerSet != null);
 
-            
-            
-           WarpMarker[] markers;
+            if (triangleMarkerSet.Triangles.Count() == 0)
+                return;
+
+            // prepare data
+                // dest
+            DestTriangle[] destTriangles = triangleMarkerSet.Triangles.Select(x => new DestTriangle() 
+                    {
+                        A = x.Vertices[0].InterpolatedMarker,
+                        V0 = x.Vertices[2].InterpolatedMarker - x.Vertices[0].InterpolatedMarker,
+                        V1 = x.Vertices[1].InterpolatedMarker - x.Vertices[0].InterpolatedMarker
+                    }).ToArray();
+            for (int i = 0; i < destTriangles.Length; ++i )
+            {
+                destTriangles[i].V0DotV0_divDenom = destTriangles[i].V0.LengthSquared;
+                destTriangles[i].V1DotV1_divDenom = destTriangles[i].V1.LengthSquared;
+                destTriangles[i].V0DotV1_divDenom = destTriangles[i].V0.Dot(destTriangles[i].V1);
+                double invDenom = 1.0 / (destTriangles[i].V0DotV0_divDenom * destTriangles[i].V1DotV1_divDenom - destTriangles[i].V0DotV1_divDenom * destTriangles[i].V0DotV1_divDenom);
+                destTriangles[i].V0DotV0_divDenom *= invDenom;
+                destTriangles[i].V1DotV1_divDenom *= invDenom;
+                destTriangles[i].V0DotV1_divDenom *= invDenom;
+            }
+                // src
+            SourceTriangle[] sourceTriangles;
             if (startImage)
             {
-                markers = lineMarkerSet.Lines.Select(x => new WarpMarker
-                {
-                    target_start = x.InterpolatedMarker.Start,
-                    target_dirNorm = x.InterpolatedMarker.End - x.InterpolatedMarker.Start,
-                    target_perpendicNorm = (x.InterpolatedMarker.End - x.InterpolatedMarker.Start).Perpendicular(),
-                    target_lineLength = (x.InterpolatedMarker.End - x.InterpolatedMarker.Start).Length,
-
-                    dest_start = x.StartMarker.Start,
-                    dest_dirNorm = x.StartMarker.End - x.StartMarker.Start,
-                    dest_perpendicNorm = (x.StartMarker.End - x.StartMarker.Start).Perpendicular(),
-                }).ToArray();
+                sourceTriangles = triangleMarkerSet.Triangles.Select(x => new SourceTriangle() 
+                    {
+                        A = x.Vertices[0].StartMarker,
+                        V0 = x.Vertices[2].StartMarker - x.Vertices[0].StartMarker,
+                        V1 = x.Vertices[1].StartMarker - x.Vertices[0].StartMarker 
+                    }).ToArray();
             }
             else
             {
-                markers =  lineMarkerSet.Lines.Select(x => new WarpMarker
-                {
-                    target_start = x.InterpolatedMarker.Start,
-                    target_dirNorm = x.InterpolatedMarker.End - x.InterpolatedMarker.Start,
-                    target_perpendicNorm = (x.InterpolatedMarker.End - x.InterpolatedMarker.Start).Perpendicular(),
-                    target_lineLength = (x.InterpolatedMarker.End - x.InterpolatedMarker.Start).Length,
-
-                    dest_start = x.EndMarker.Start,
-                    dest_dirNorm = x.EndMarker.End - x.EndMarker.Start,
-                    dest_perpendicNorm = (x.EndMarker.End - x.EndMarker.Start).Perpendicular(),
-                }).ToArray();
+                sourceTriangles = triangleMarkerSet.Triangles.Select(x => new SourceTriangle() 
+                    {
+                        A = x.Vertices[0].EndMarker,
+                        V0 = x.Vertices[2].EndMarker - x.Vertices[0].EndMarker,
+                        V1 = x.Vertices[1].EndMarker - x.Vertices[0].EndMarker 
+                    }).ToArray();
             }
-            for (int markerIdx = 0; markerIdx < markers.Length; ++markerIdx)
-            {
-             //   markers[markerIdx].target_dirLength = markers[markerIdx].target_dir.Length;
-                markers[markerIdx].target_perpendicNorm.Normalize();
-                markers[markerIdx].target_dirNorm.Normalize();
-                markers[markerIdx].dest_perpendicNorm.Normalize();
-                markers[markerIdx].dest_dirNorm.Normalize();
-            }
-
-            if (markers.Length == 0)
-                return;
-            */
-
+          
+            // process pixel wise
             double xStep = 1.0 / outputImage.Width;
-
             Parallel.For(0, outputImage.Height, yi =>
             {
                 Color* outputDataPixel = outputImage.Data + yi * outputImage.Width;
                 Color* lastOutputDataPixel = outputDataPixel + outputImage.Width;
                 double y = (double)yi / outputImage.Height;
 
+                double u,v;
+                double dot00, dot01, dot02, dot11, dot12;
+                double invDenom;
+                Vector v2;
+
                 for (double x = 0; outputDataPixel != lastOutputDataPixel; x += xStep, ++outputDataPixel)
                 {
                     Vector position = new Vector(x, y);
-                    Vector displacement = new Vector(0, 0);
-                    double weightSum = 0.0f;
 
-                  //  for (int markerIdx = 0; markerIdx < markers.Length; ++markerIdx)
+                    for (int triangleIdx = 0; triangleIdx < destTriangles.Length; ++triangleIdx)
                     {
+                        // compute barycentric - http://www.blackpawn.com/texts/pointinpoly/
+                        v2 = position - destTriangles[triangleIdx].A;
+
+                        // Compute dot products
+                        dot02 = VectorExtension.Dot(destTriangles[triangleIdx].V0, v2);
+                        dot12 = VectorExtension.Dot(destTriangles[triangleIdx].V1, v2);
+
+                        // Compute barycentric coordinates
+                        u = (destTriangles[triangleIdx].V1DotV1_divDenom * dot02 - destTriangles[triangleIdx].V0DotV1_divDenom * dot12);
+                        v = (destTriangles[triangleIdx].V0DotV0_divDenom * dot12 - destTriangles[triangleIdx].V0DotV1_divDenom * dot02);
+
+                        // Check if point is in triangle
+                        if ((u >= 0) && (v >= 0) && (u + v < 1))
+                        {
+                            position = sourceTriangles[triangleIdx].A + sourceTriangles[triangleIdx].V0 * u + sourceTriangles[triangleIdx].V1 * v;
+                            break;
+                        }
                     }
-
-                    //displacement /= weightSum;
-                    position += displacement;
                     position = position.ClampToImageArea();
-
                     *outputDataPixel = inputImage.Sample(position.X, position.Y);
                 }
             });
