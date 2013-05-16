@@ -11,16 +11,36 @@ namespace MorphingTool
 {
     class TriangleMarkerSet : MarkerSet
     {
-        public class PointMarker : Marker<Vector>
+        public class Vertex : Marker<Vector>
         {
             public override void UpdateInterpolatedMarker(float interp)
             {
                 InterpolatedMarker = StartMarker.Lerp(EndMarker, interp);
+                TriangulationPosition = StartMarker.Lerp(EndMarker, 0.5f);
             }
+
+            /// <summary>
+            /// position used for triangulation
+            /// </summary>
+            public Vector TriangulationPosition;
+
+            /// <summary>
+            /// triangles that use this vertex
+            /// </summary>
+            public List<Triangle> AssociatedTriangles = new List<Triangle>();
         };
 
-        public IEnumerable<PointMarker> Points
-        { get { return _markerList.Cast<PointMarker>(); } }
+        public class Triangle
+        {
+            public Vertex vertexA;
+            public Vertex vertexB;
+            public Vertex vertexC;
+        }
+
+        private List<Triangle> _triangles = new List<Triangle>();
+
+        public IEnumerable<Vertex> Points
+        { get { return _markerList.Cast<Vertex>(); } }
 
         private const int NUM_NONEDITABLE_MARKER = 4;
 
@@ -29,10 +49,22 @@ namespace MorphingTool
 
         public TriangleMarkerSet()
         {
-            _markerList.Add(new PointMarker() { StartMarker = new Vector(0, 0), EndMarker = new Vector(0, 0), InterpolatedMarker = new Vector(0, 0) });
-            _markerList.Add(new PointMarker() { StartMarker = new Vector(1, 0), EndMarker = new Vector(1, 0), InterpolatedMarker = new Vector(1, 0) });
-            _markerList.Add(new PointMarker() { StartMarker = new Vector(1, 1), EndMarker = new Vector(1, 1), InterpolatedMarker = new Vector(1, 1) });
-            _markerList.Add(new PointMarker() { StartMarker = new Vector(0, 1), EndMarker = new Vector(0, 1), InterpolatedMarker = new Vector(0, 1) });
+            _markerList.Add(new Vertex() { StartMarker = new Vector(0, 0), EndMarker = new Vector(0, 0) });
+            _markerList.Add(new Vertex() { StartMarker = new Vector(1, 0), EndMarker = new Vector(1, 0) });
+            _markerList.Add(new Vertex() { StartMarker = new Vector(1, 1), EndMarker = new Vector(1, 1) });
+            _markerList.Add(new Vertex() { StartMarker = new Vector(0, 1), EndMarker = new Vector(0, 1) });
+
+            _triangles.Add(new Triangle() { vertexA = (Vertex)_markerList[0], vertexB = (Vertex)_markerList[1], vertexC = (Vertex)_markerList[3] });
+            _triangles.Add(new Triangle() { vertexA = (Vertex)_markerList[1], vertexB = (Vertex)_markerList[2], vertexC = (Vertex)_markerList[3] });
+
+            foreach (var triangle in _triangles)
+            {
+                triangle.vertexA.AssociatedTriangles.Add(triangle);
+                triangle.vertexB.AssociatedTriangles.Add(triangle);
+                triangle.vertexC.AssociatedTriangles.Add(triangle);
+            }
+            foreach (var marker in _markerList)
+                marker.UpdateInterpolatedMarker(0.0f);
         }
 
         /// <summary>
@@ -59,7 +91,7 @@ namespace MorphingTool
             if (_selectedMarker >= 0)
                 return;
 
-            var newMarker = new PointMarker()
+            var newMarker = new Vertex()
             {
                 StartMarker = imageCor,
                 EndMarker = imageCor,
@@ -78,7 +110,7 @@ namespace MorphingTool
 
             if (_selectedMarker >= NUM_NONEDITABLE_MARKER)
             {
-                ((PointMarker)_markerList[_selectedMarker])[clickLocation] = imageCor;
+                ((Vertex)_markerList[_selectedMarker])[clickLocation] = imageCor;
                 _markerList[_selectedMarker].UpdateInterpolatedMarker(_lastInterpolationFactor);
                 return true;
             }
@@ -107,6 +139,26 @@ namespace MorphingTool
         {
             // brute force way - todo: move exiting elements (identifing by name), delete obsolte ones and create new ones
             imageCanvas.Children.Clear();
+
+            // triangle lines
+            for (int triangleIndex = 0; triangleIndex < _triangles.Count; ++triangleIndex)
+            {
+                var triangle = new Polygon();
+                triangle.Points.Add(new Point(_triangles[triangleIndex].vertexA[location].X, _triangles[triangleIndex].vertexA[location].Y));
+                triangle.Points.Add(new Point(_triangles[triangleIndex].vertexB[location].X, _triangles[triangleIndex].vertexB[location].Y));
+                triangle.Points.Add(new Point(_triangles[triangleIndex].vertexC[location].X, _triangles[triangleIndex].vertexC[location].Y));
+                triangle.Fill = Brushes.Transparent;
+                triangle.Width = imageSizePixel.X;
+                triangle.Height = imageSizePixel.Y;
+                triangle.Stretch = Stretch.Fill;
+                triangle.Stroke = Brushes.White;
+                triangle.StrokeThickness = 2;
+
+                Canvas.SetLeft(triangle, imageOffsetPixel.X);
+                Canvas.SetTop(triangle, imageOffsetPixel.Y);
+
+                imageCanvas.Children.Add(triangle);
+            }
 
             AddPointsToCanvases(Points.Select(x => x[location]), _selectedMarker, _hoveredMarker, imageCanvas, imageOffsetPixel, imageSizePixel);
         }

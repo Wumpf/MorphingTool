@@ -149,7 +149,7 @@ namespace MorphingTool
                 var arrow = new Tomers.WPF.Shapes.ArrowShape();
                 arrow.HeadHeight = MarkerSet.MARKER_RENDER_SIZE / 2;
                 arrow.HeadWidth = MarkerSet.MARKER_RENDER_SIZE;
-                arrow.Stretch = Stretch.Fill;
+                arrow.Stretch = Stretch.None;
                 if (markerIdx == _dragedEndPoint || markerIdx == _dragedStartPoint)
                     arrow.Stroke = new SolidColorBrush(Colors.Red);
                 else if (markerIdx == _hoveredStartPoint || markerIdx == _hoveredEndPoint)
@@ -157,17 +157,13 @@ namespace MorphingTool
                 else
                     arrow.Stroke = new SolidColorBrush(Colors.Black);
                 arrow.StrokeThickness = 2;
-                arrow.X1 = marker[location].Start.X * imageSizePixel.X + imageOffsetPixel.X;
-                arrow.X2 = marker[location].End.X * imageSizePixel.X + imageOffsetPixel.X;
-                arrow.Y1 = marker[location].Start.Y * imageSizePixel.Y + imageOffsetPixel.Y;
-                arrow.Y2 = marker[location].End.Y * imageSizePixel.Y + imageOffsetPixel.Y;
+                arrow.X1 = marker[location].Start.X * imageSizePixel.X;
+                arrow.X2 = marker[location].End.X * imageSizePixel.X;
+                arrow.Y1 = marker[location].Start.Y * imageSizePixel.Y;
+                arrow.Y2 = marker[location].End.Y * imageSizePixel.Y;
 
-                
-                Canvas.SetLeft(arrow, Math.Min(arrow.X1, arrow.X2));
-                Canvas.SetTop(arrow, Math.Min(arrow.Y1, arrow.Y2));
-                Canvas.SetRight(arrow, Math.Max(arrow.X1, arrow.X2));
-                Canvas.SetBottom(arrow, Math.Max(arrow.Y2, arrow.Y2));
-
+                Canvas.SetLeft(arrow, imageOffsetPixel.X);
+                Canvas.SetTop(arrow, imageOffsetPixel.Y);
                 imageCanvas.Children.Add(arrow);
             }
 
