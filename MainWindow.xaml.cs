@@ -291,5 +291,12 @@ namespace MorphingTool
             _morphingAlgorithm.SetStartImage(StartImage.Source as BitmapSource);
             _morphingAlgorithm.SetEndImage(EndImage.Source as BitmapSource);
         }
+
+        private void ShowOutputMarker_Checked(object sender, RoutedEventArgs e)
+        {
+            OutputImageMarkerCanvas.Visibility = (bool)((CheckBox)sender).IsChecked ? Visibility.Visible : Visibility.Hidden;
+            OutputImageMarkerCanvas.UpdateLayout();
+            UpdateMarkerCanvases();
+        }
     }
 }

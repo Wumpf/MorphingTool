@@ -30,7 +30,7 @@
                                         MouseLeftButtonUp="Image_MarkerDeselect" MouseLeave="Image_MarkerDeselect" MouseMove="Image_MouseMove" Margin="0,0,0,5"/>
             <Canvas Name="EndImageMarkerCanvas" Grid.Column="1" IsHitTestVisible="False" Margin="0,0,0,5"/>
             <Image Grid.Row="1" Name="OutputImage" Grid.ColumnSpan="2" Margin="0,5,0,0"/>
-            <Canvas Name="OutputImageMarkerCanvas" Grid.Row="1" Grid.ColumnSpan="2" IsHitTestVisible="False" Margin="0,5,0,0" Visibility="{Binding IsChecked,ElementName=ShowOutputMarker,Converter={StaticResource booleanToVisibility}}" />
+            <Canvas Name="OutputImageMarkerCanvas" Grid.Row="1" Grid.ColumnSpan="2" IsHitTestVisible="False" Margin="0,5,0,0" Visibility="Hidden"/>
         </Grid>
         <Button Name="LoadStartImageButton" Content="Load Start Image" Margin="26,10,26,0" VerticalAlignment="Top" Height="20" Click="OnClick_LoadStartImage"/>
         <Button Name="LoadEndImageButton" Content="Load End Image" Margin="26,35,26,0" VerticalAlignment="Top" Height="20" Click="OnClick_LoadEndImage"/>
@@ -91,7 +91,7 @@
                 <RadioButton Content="combined" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="DissolverSetting" IsChecked="True" Name="DissolverSetting_Combined" Checked="DissolverSettingChanged"/>
                 <RadioButton Content="only start" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,20,0,0" GroupName="DissolverSetting" Name="DissolverSetting_StartOnly" Checked="DissolverSettingChanged"/>
                 <RadioButton Content="only end" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,40,0,0" GroupName="DissolverSetting" Name="DissolverSetting_EndOnly" Checked="DissolverSettingChanged"/>
-                <CheckBox Content="show marker" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Name="ShowOutputMarker"/>
+                <CheckBox Content="show marker" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Name="ShowOutputMarker" Click="ShowOutputMarker_Checked"/>
 
             </Grid>
         </GroupBox>
