@@ -14,6 +14,7 @@
             <ColumnDefinition Width="250"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
+
         <Grid Margin="0,10,10,39" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="#FFEAEAEA" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -53,7 +54,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="Animation" Margin="10,273,10,0" Height="143" VerticalAlignment="Top">
+        <GroupBox Header="Animation" Margin="10,336,10,0" Height="143" VerticalAlignment="Top">
             <Grid Margin="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="103*"/>
@@ -96,5 +97,6 @@
 
             </Grid>
         </GroupBox>
+        <xctk:BusyIndicator Name="RenderVideoIndicator" IsBusy="True" BusyContent="Rendering..." VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.ColumnSpan="2" Visibility="Hidden"/>
     </Grid>
 </Window>

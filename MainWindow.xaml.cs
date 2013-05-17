@@ -255,53 +255,54 @@ namespace MorphingTool
             if (_originalStartImage == null || _originalStartImage == null)
                 return;
 
+            // do some potentially ui dependent stuff
+            RenderVideoIndicator.Visibility = System.Windows.Visibility.Visible;
+
             _morphingAlgorithm.SetStartImage(_originalStartImage);
             _morphingAlgorithm.SetEndImage(_originalEndImage);
             try
             {
                 System.IO.Directory.Delete("temp", true);
             }
-            catch(Exception) {}
+            catch (Exception) { }
             System.IO.Directory.CreateDirectory("temp");
 
-            // buffer
-     /*       const int BUFFER_SIZE = 4;
-            WriteableBitmap[] bitmapBuffer = new WriteableBitmap[BUFFER_SIZE];
-            for(int i=0; i<BUFFER_SIZE; ++i)
-            {
-                bitmapBuffer[i] = new WriteableBitmap(Math.Max(_originalStartImage.PixelWidth, _originalEndImage.PixelWidth),
-                                                            Math.Max(_originalStartImage.PixelHeight, _originalEndImage.PixelHeight),
-                                                            96.0f, 96.0f, PixelFormats.Bgra32, null);
-            }
-            System.Threading.Semaphore usableImageIndex = new System.Threading.Semaphore(0, BUFFER_SIZE); 
-            */
 
-            var output = new WriteableBitmap(Math.Max(_originalStartImage.PixelWidth, _originalEndImage.PixelWidth),
-                                                            Math.Max(_originalStartImage.PixelHeight, _originalEndImage.PixelHeight),
-                                                            96.0f, 96.0f, PixelFormats.Bgra32, null);
-
+            // run in parallel to keep ui responsive
             int numFrames = (int)NumFrames.Value;
-            for (int frame = 0; frame < numFrames; ++frame)
-            {
-                float progress = (float)frame / (numFrames - 1);
-                _morphingAlgorithm.MorphImages(progress, output);
-
-                // save to file
-                string filename = "temp//frame" + (frame+1) + ".jpg";
-                var imageEncoder = new JpegBitmapEncoder();
-                imageEncoder.QualityLevel = 70;
-                imageEncoder.Frames.Add(BitmapFrame.Create(output));
-                using (var file = System.IO.File.OpenWrite(filename))
-                    imageEncoder.Save(file);
-                imageEncoder.Frames.Clear();
-            }
-
-            // encode
             int frameRate = (int)(numFrames / (double)Duration.Value + 0.5);
-            System.Diagnostics.Process.Start("ffmpeg.exe", "-f image2 -i temp//frame%d.jpg -r " + frameRate + " video.mpg");
+            int width = Math.Max(_originalStartImage.PixelWidth, _originalEndImage.PixelWidth);
+            int height = Math.Max(_originalStartImage.PixelHeight, _originalEndImage.PixelHeight);
+            var mainUiDispatcher = Dispatcher;
+            new Task(() =>
+            {
+                var output = new WriteableBitmap(width, height, 96.0f, 96.0f, PixelFormats.Bgra32, null);
+                for (int frame = 0; frame < numFrames; ++frame)
+                {
+                    float progress = (float)frame / (numFrames - 1);
+                    _morphingAlgorithm.MorphImages(progress, output);
 
-            _morphingAlgorithm.SetStartImage(StartImage.Source as BitmapSource);
-            _morphingAlgorithm.SetEndImage(EndImage.Source as BitmapSource);
+                    // save to file
+                    string filename = "temp//frame" + (frame + 1) + ".jpg";
+                    var imageEncoder = new JpegBitmapEncoder();
+                    imageEncoder.QualityLevel = 70;
+                    imageEncoder.Frames.Add(BitmapFrame.Create(output));
+                    using (var file = System.IO.File.OpenWrite(filename))
+                        imageEncoder.Save(file);
+                    imageEncoder.Frames.Clear();
+                }
+
+                // encode
+                System.Diagnostics.Process.Start("ffmpeg.exe", "-f image2 -i temp//frame%d.jpg -r " + frameRate + " video.mpg");
+
+                // reset ui
+                mainUiDispatcher.BeginInvoke(new Action(() =>
+                {
+                    _morphingAlgorithm.SetStartImage(StartImage.Source as BitmapSource);
+                    _morphingAlgorithm.SetEndImage(EndImage.Source as BitmapSource);
+                    RenderVideoIndicator.Visibility = System.Windows.Visibility.Hidden;
+                }));
+            }).Start();
         }
 
         /// <summary>
