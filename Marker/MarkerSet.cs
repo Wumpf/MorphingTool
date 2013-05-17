@@ -93,6 +93,14 @@ namespace MorphingTool
             OUTPUT_IMAGE = 2,
             NONE = -1
         }
+
+        /// <summary>
+        /// Removes all markers
+        /// </summary>
+        public virtual void ClearMarkers()
+        {
+            _markerList.Clear();
+        }
         
         /// <summary>
         /// Performs action for left mouse button down on one of the 3 image areas. Usually sets a Marker.

@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        Title="MainWindow" Height="602.4" Width="1024" SizeChanged="Window_SizeChanged" MinWidth="400" MinHeight="300">
+        Title="MainWindow" Height="600" Width="1024" SizeChanged="Window_SizeChanged" MinWidth="600" MinHeight="450">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="booleanToVisibility" />
     </Window.Resources>
@@ -32,12 +32,12 @@
             <Image Grid.Row="1" Name="OutputImage" Grid.ColumnSpan="2" Margin="0,5,0,0"/>
             <Canvas Name="OutputImageMarkerCanvas" Grid.Row="1" Grid.ColumnSpan="2" IsHitTestVisible="False" Margin="0,5,0,0" Visibility="Hidden"/>
         </Grid>
-        <Button Name="LoadStartImageButton" Content="Load Start Image" Margin="26,10,26,0" VerticalAlignment="Top" Height="20" Click="OnClick_LoadStartImage"/>
-        <Button Name="LoadEndImageButton" Content="Load End Image" Margin="26,35,26,0" VerticalAlignment="Top" Height="20" Click="OnClick_LoadEndImage"/>
+        <Button Name="LoadStartImageButton" Content="Load Start Image" Margin="26,10,26,0" VerticalAlignment="Top" Height="28" Click="OnClick_LoadStartImage"/>
+        <Button Name="LoadEndImageButton" Content="Load End Image" Margin="26,43,26,0" VerticalAlignment="Top" Height="28" Click="OnClick_LoadEndImage"/>
         <Slider Margin="10,0,10,10" Height="24" VerticalAlignment="Bottom" Grid.Column="1" ValueChanged="OnProgressChange" Name="ProgressBar" Minimum="1" Maximum="{Binding Value, ElementName=NumFrames, ValidatesOnExceptions=True}"  TickFrequency="1" SmallChange="1" IsSnapToTickEnabled="True"/>
 
 
-        <GroupBox Header="Algorithm" Margin="10,64,10,0" Height="60" VerticalAlignment="Top" Name="AlgorithmGroup">
+        <GroupBox Header="Algorithm/Marker" Margin="10,76,10,0" Height="94" VerticalAlignment="Top" Name="AlgorithmGroup">
             <Grid Margin="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="89*"/>
@@ -49,10 +49,11 @@
                     <ComboBoxItem Content="Mesh Morphing"/>
                 </ComboBox>
                 <Label Content="Technique:" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="67"/>
+                <Button Content="Clear Marker" VerticalAlignment="Top" Margin="0,31,0,0" Height="28" Grid.ColumnSpan="2" Click="OnClearMarker_Click"/>
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="Animation" Margin="10,227,10,0" Height="143" VerticalAlignment="Top">
+        <GroupBox Header="Animation" Margin="10,273,10,0" Height="143" VerticalAlignment="Top">
             <Grid Margin="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="103*"/>
@@ -82,7 +83,7 @@
                 <Button x:Name="RenderVideo" Content="Render Video" VerticalAlignment="Top" Click="RenderVideo_Click" Margin="0,82,0,0" Height="28" Grid.ColumnSpan="2"/>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Output-View" Margin="10,129,10,0" Height="93" VerticalAlignment="Top">
+        <GroupBox Header="Output-View" Margin="10,175,10,0" Height="93" VerticalAlignment="Top">
             <Grid Margin="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>

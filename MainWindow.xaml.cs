@@ -210,12 +210,18 @@ namespace MorphingTool
             UpdateMarkerCanvases();
         }
 
+        /// <summary>
+        /// window was resized
+        /// </summary>
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             AdaptInputOutputImages();
             UpdateMarkerCanvases();
         }
 
+        /// <summary>
+        /// another morphing algorithm was choosen
+        /// </summary>
         private void MorphingTechniqueSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
@@ -226,6 +232,9 @@ namespace MorphingTool
             }
         }
 
+        /// <summary>
+        /// click on one of the dissolver setting radioboxes
+        /// </summary>
         private void DissolverSettingChanged(object sender, RoutedEventArgs e)
         {
             if((bool)DissolverSetting_Combined.IsChecked)
@@ -237,7 +246,10 @@ namespace MorphingTool
 
             UpdateOutputImageContent();
         }
-
+        
+        /// <summary>
+        /// click on the render video button
+        /// </summary>
         private void RenderVideo_Click(object sender, RoutedEventArgs e)
         {
             if (_originalStartImage == null || _originalStartImage == null)
@@ -292,10 +304,22 @@ namespace MorphingTool
             _morphingAlgorithm.SetEndImage(EndImage.Source as BitmapSource);
         }
 
+        /// <summary>
+        /// Click on the show output marker checkbox
+        /// </summary>
         private void ShowOutputMarker_Checked(object sender, RoutedEventArgs e)
         {
             OutputImageMarkerCanvas.Visibility = (bool)((CheckBox)sender).IsChecked ? Visibility.Visible : Visibility.Hidden;
             OutputImageMarkerCanvas.UpdateLayout();
+            UpdateMarkerCanvases();
+        }
+
+        /// <summary>
+        /// Click on the clear marker button
+        /// </summary>
+        private void OnClearMarker_Click(object sender, RoutedEventArgs e)
+        {
+            _morphingAlgorithm.MarkerSet.ClearMarkers();
             UpdateMarkerCanvases();
         }
     }

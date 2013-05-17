@@ -55,15 +55,31 @@ namespace MorphingTool
 
         public TriangleMarkerSet()
         {
-            _markerList.Add(new Vertex() { StartMarker = new Vector(0, 0), EndMarker = new Vector(0, 0) });
-            _markerList.Add(new Vertex() { StartMarker = new Vector(1, 0), EndMarker = new Vector(1, 0) });
-            _markerList.Add(new Vertex() { StartMarker = new Vector(1, 1), EndMarker = new Vector(1, 1) });
-            _markerList.Add(new Vertex() { StartMarker = new Vector(0, 1), EndMarker = new Vector(0, 1) });
+            // fixed corner points with random offset to avaid triangulation border cases
+            Random rand = new Random();
+            double offset = rand.NextDouble() * 0.001;
+            _markerList.Add(new Vertex() { StartMarker = new Vector(0, -offset), EndMarker = new Vector(0, -offset) });
+            offset = rand.NextDouble() * 0.001;
+            _markerList.Add(new Vertex() { StartMarker = new Vector(1.0 + offset, 0), EndMarker = new Vector(1 + offset, 0) });
+            offset = rand.NextDouble() * 0.001;
+            _markerList.Add(new Vertex() { StartMarker = new Vector(1, 1 + offset), EndMarker = new Vector(1, 1 + offset) });
+            offset = rand.NextDouble() * 0.001;
+            _markerList.Add(new Vertex() { StartMarker = new Vector(0 - offset, 1), EndMarker = new Vector(0 - offset, 1) });
 
             foreach (var marker in _markerList)
                 marker.UpdateInterpolatedMarker(0.0f);
 
             // delauny triangulation!
+            _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Vertices).Cells;
+        }
+
+
+        /// <summary>
+        /// Removes all markers
+        /// </summary>
+        override public void ClearMarkers()
+        {
+            _markerList.RemoveRange(NUM_NONEDITABLE_MARKER, _markerList.Count - NUM_NONEDITABLE_MARKER);
             _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Vertices).Cells;
         }
 
