@@ -149,12 +149,11 @@ namespace MorphingTool
             {
                 switch(location)
                 {
+                case MarkerSet.Location.END_IMAGE:
                 case MarkerSet.Location.START_IMAGE:
                     _morphingAlgorithm.MarkerSet.UpdateMarkerCanvas(MarkerSet.Location.START_IMAGE, StartImageMarkerCanvas,
                                                                 new Vector((StartImageMarkerCanvas.ActualWidth - StartImage.ActualWidth) / 2, (StartImageMarkerCanvas.ActualHeight - StartImage.ActualHeight) / 2),
                                                                 new Vector(StartImage.ActualWidth, StartImage.ActualHeight));
-                    break;
-                case MarkerSet.Location.END_IMAGE:
                     _morphingAlgorithm.MarkerSet.UpdateMarkerCanvas(MarkerSet.Location.END_IMAGE, EndImageMarkerCanvas,
                                                                 new Vector((EndImageMarkerCanvas.ActualWidth - EndImage.ActualWidth) / 2, (EndImageMarkerCanvas.ActualHeight - EndImage.ActualHeight) / 2),
                                                                 new Vector(EndImage.ActualWidth, EndImage.ActualHeight));

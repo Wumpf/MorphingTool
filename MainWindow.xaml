@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        Title="MainWindow" Height="600" Width="1024" SizeChanged="Window_SizeChanged" MinWidth="600" MinHeight="450">
+        Title="MorphingTool" Height="600" Width="1024" SizeChanged="Window_SizeChanged" MinWidth="600" MinHeight="450">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="booleanToVisibility" />
     </Window.Resources>
