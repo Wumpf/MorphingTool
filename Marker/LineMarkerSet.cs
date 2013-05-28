@@ -9,8 +9,14 @@ using System.Windows.Shapes;
 
 namespace MorphingTool
 {
+    /// <summary>
+    /// Markerset consisting out of lines
+    /// </summary>
     class LineMarkerSet : MarkerSet
     {
+        /// <summary>
+        /// A single line
+        /// </summary>
         public class Line
         {
             public Vector Start;
@@ -26,6 +32,9 @@ namespace MorphingTool
             }
         }
 
+        /// <summary>
+        /// Marker object of this markerset
+        /// </summary>
         public class LineMarker : Marker<Line>
         {
             public override void UpdateInterpolatedMarker(float interp)

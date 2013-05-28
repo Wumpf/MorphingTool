@@ -7,6 +7,9 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
+/// Defines a a Triangle Marker
+using TriangleMarker = MIConvexHull.DefaultTriangulationCell<MorphingTool.TriangleMarkerSet.Vertex>;
+
 namespace MorphingTool
 {
     class TriangleMarkerSet : MarkerSet
@@ -39,10 +42,12 @@ namespace MorphingTool
             }
         };
 
-
-        public IEnumerable<MIConvexHull.DefaultTriangulationCell<Vertex>> Triangles
+        /// <summary>
+        /// Markerlist of this markerset
+        /// </summary>
+        public IEnumerable<TriangleMarker> Triangles
         { get { return _triangles; } }
-        private IEnumerable<MIConvexHull.DefaultTriangulationCell<Vertex>> _triangles = new List<MIConvexHull.DefaultTriangulationCell<Vertex>>();
+        private IEnumerable<TriangleMarker> _triangles = new List<TriangleMarker>();
 
 
         private IEnumerable<Vertex> Vertices
@@ -70,7 +75,7 @@ namespace MorphingTool
                 marker.UpdateInterpolatedMarker(0.0f);
 
             // delauny triangulation!
-            _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Vertices).Cells;
+            _triangles = MIConvexHull.DelaunayTriangulation<Vertex, TriangleMarker>.Create(Vertices).Cells;
         }
 
 
@@ -80,7 +85,7 @@ namespace MorphingTool
         override public void ClearMarkers()
         {
             _markerList.RemoveRange(NUM_NONEDITABLE_MARKER, _markerList.Count - NUM_NONEDITABLE_MARKER);
-            _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Vertices).Cells;
+            _triangles = MIConvexHull.DelaunayTriangulation<Vertex, TriangleMarker>.Create(Vertices).Cells;
         }
 
         /// <summary>
@@ -119,7 +124,7 @@ namespace MorphingTool
             _markerList.Add(newMarker);
 
             // recompute delauny triangulation!
-            _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Vertices).Cells;
+            _triangles = MIConvexHull.DelaunayTriangulation<Vertex, TriangleMarker>.Create(Vertices).Cells;
         }
 
         public override bool OnMouseMove(MarkerSet.Location clickLocation, Vector imageCor, Vector imageSizePixel)
@@ -135,7 +140,7 @@ namespace MorphingTool
                 _markerList[_selectedMarker].UpdateInterpolatedMarker(_lastInterpolationFactor);
 
                 // recompute delauny triangulation!
-                _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Vertices).Cells;
+                _triangles = MIConvexHull.DelaunayTriangulation<Vertex, TriangleMarker>.Create(Vertices).Cells;
 
                 return true;
             }
@@ -159,7 +164,7 @@ namespace MorphingTool
                 _selectedMarker = -1;
 
                 // recompute delauny triangulation!
-                _triangles = MIConvexHull.DelaunayTriangulation<Vertex, MIConvexHull.DefaultTriangulationCell<Vertex>>.Create(Vertices).Cells;
+                _triangles = MIConvexHull.DelaunayTriangulation<Vertex, TriangleMarker>.Create(Vertices).Cells;
             }
         }
 
